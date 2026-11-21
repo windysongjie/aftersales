@@ -1,0 +1,1772 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="data:," />
+    <title>售后在线平台</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Archivo:wght@600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+    <style>
+      button, [role="button"], select, summary, input:not([type="checkbox"], [type="radio"]) { min-height: 2rem; }
+      * { box-sizing: border-box; }
+      :root{
+        --bg:#edf0f2; --surface:#ffffff; --surface2:#f4f7f8; --ink:#16232c; --ink2:#42525d; --muted:#71828d;
+        --line:#d8dfe4; --line2:#bfcbd2;
+        --brand:#0d3648; --brand2:#12506a; --brand-ink:#dcebf2;
+        --accent:#e05e1f; --accent-soft:#fdeee4;
+        --teal:#0d7a63; --teal-soft:#e0f1ec;
+        --amber:#9c6800; --amber-soft:#fdf2d7;
+        --red:#b3372a; --red-soft:#fbeae7;
+        --blue:#1d5f9e; --blue-soft:#e5eef8;
+        --chip:#edf2f4;
+        --shadow:0 1px 2px rgba(13,45,60,.06),0 10px 28px -14px rgba(13,45,60,.22);
+        --radius:10px;
+      }
+      @media (prefers-color-scheme: dark){
+        :root{
+          --bg:#0b1319; --surface:#15212b; --surface2:#1a2833; --ink:#e7eff4; --ink2:#afc0cb; --muted:#7f939f;
+          --line:#283945; --line2:#3a4f5e;
+          --brand:#0a141c; --brand2:#8fc6dc; --brand-ink:#b9d4e0;
+          --accent:#f0834a; --accent-soft:#3a2415;
+          --teal:#3ec39f; --teal-soft:#11302a;
+          --amber:#e5b54d; --amber-soft:#33290e;
+          --red:#ef8a7c; --red-soft:#38201c;
+          --blue:#7db3e3; --blue-soft:#152a3e;
+          --chip:#1d2d39;
+          --shadow:0 1px 2px rgba(0,0,0,.35),0 10px 28px -14px rgba(0,0,0,.55);
+        }
+      }
+      html{ scroll-behavior:smooth; }
+      body{ margin:0; background:var(--bg); color:var(--ink); font-family:"Noto Sans SC",system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif; font-size:15px; line-height:1.55; }
+      .num{ font-family:"Archivo","Noto Sans SC",sans-serif; }
+      .mono{ font-family:"JetBrains Mono",ui-monospace,monospace; font-size:.88em; }
+      a{ color:var(--brand2); }
+      :focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
+      body.custview .intonly{ display:none !important; }
+
+      /* ============ App shell ============ */
+      .shell{ display:grid; grid-template-columns:232px 1fr; min-height:100vh; }
+      .side{ background:var(--brand); color:var(--brand-ink); position:sticky; top:0; height:100vh; display:flex; flex-direction:column; }
+      @media (prefers-color-scheme: dark){ .side{ border-right:1px solid var(--line); } }
+      .side .logo{ padding:18px 20px 14px; border-bottom:1px solid rgba(255,255,255,.13); }
+      .side .logo .t1{ font-weight:900; font-size:17.5px; color:#fff; letter-spacing:.02em; }
+      .side .logo .t2{ font-size:11.5px; color:#93b4c6; margin-top:2px; letter-spacing:.08em; }
+      .side nav{ padding:12px 10px; display:flex; flex-direction:column; gap:2px; overflow-y:auto; }
+      .side nav .grp{ font-size:11px; color:#7fa3b5; font-weight:700; letter-spacing:.1em; padding:12px 12px 5px; }
+      .side nav button{ border:0; background:transparent; color:#cfe0e9; font:inherit; text-align:left; padding:9px 12px; border-radius:8px; font-size:14px; display:flex; align-items:center; gap:10px; min-height:40px; cursor:pointer; width:100%; }
+      .side nav button:hover{ background:rgba(255,255,255,.08); color:#fff; }
+      .side nav button.on{ background:rgba(255,255,255,.14); color:#fff; font-weight:700; }
+      .side nav button svg{ flex:none; opacity:.85; }
+      .side nav button .bdg{ margin-left:auto; font-size:11px; font-weight:800; background:var(--accent); color:#fff; border-radius:99px; padding:0 7px; line-height:18px; }
+      .side nav button .bdg.gray{ background:rgba(255,255,255,.22); }
+      .side .usercard{ margin-top:auto; padding:14px 16px; border-top:1px solid rgba(255,255,255,.13); display:flex; gap:11px; align-items:center; }
+      .avatar{ width:38px; height:38px; border-radius:50%; background:var(--accent); color:#fff; font-weight:900; font-size:15px; display:flex; align-items:center; justify-content:center; flex:none; }
+      .side .usercard .un{ color:#fff; font-weight:700; font-size:13.5px; line-height:1.3; }
+      .side .usercard .ur{ color:#93b4c6; font-size:12px; line-height:1.3; }
+      .side .envtag{ padding:0 16px 14px; font-size:11.5px; color:#7fa3b5; }
+
+      .main{ min-width:0; display:flex; flex-direction:column; }
+      .topbar{ position:sticky; top:0; z-index:30; background:color-mix(in srgb, var(--surface) 94%, transparent); backdrop-filter:blur(8px); border-bottom:1px solid var(--line); padding:10px 24px; display:flex; flex-wrap:wrap; gap:10px 14px; align-items:center; }
+      .topbar h1{ font-size:18px; font-weight:900; margin:0; }
+      .topbar .sub{ font-size:12.5px; color:var(--muted); }
+      .searchbox{ margin-left:auto; position:relative; }
+      .searchbox input{ font:inherit; font-size:13.5px; width:230px; max-width:56vw; padding:8px 12px 8px 34px; border:1px solid var(--line); border-radius:9px; background:var(--surface2); color:var(--ink); min-height:38px; }
+      .searchbox svg{ position:absolute; left:10px; top:50%; transform:translateY(-50%); color:var(--muted); }
+      .iconbtn{ position:relative; border:1px solid var(--line); background:var(--surface); color:var(--ink2); border-radius:9px; width:38px; height:38px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; }
+      .iconbtn .dot{ position:absolute; top:7px; right:8px; width:8px; height:8px; border-radius:50%; background:var(--accent); }
+      .viewctl{ display:flex; gap:8px; align-items:center; }
+      .viewctl label{ font-size:12.5px; color:var(--muted); font-weight:700; }
+      .seg{ display:inline-flex; background:var(--chip); border:1px solid var(--line); border-radius:9px; padding:3px; gap:2px; }
+      .seg button{ border:0; background:transparent; color:var(--ink2); font:inherit; font-size:13px; font-weight:700; padding:5px 12px; border-radius:7px; cursor:pointer; min-height:32px; }
+      .seg button[aria-pressed="true"]{ background:var(--surface); color:var(--ink); box-shadow:0 1px 3px rgba(13,45,60,.18); }
+      select.tenantSel{ font:inherit; font-size:13px; font-weight:700; color:var(--ink); background:var(--chip); border:1px solid var(--line); border-radius:9px; padding:6px 9px; min-height:36px; }
+      select.tenantSel:disabled{ opacity:.45; }
+
+      .wrap{ max-width:1240px; width:100%; margin:0 auto; padding:22px 24px 64px; flex:1; }
+      .page{ display:none; }
+      .page.on{ display:block; }
+      .pagehead{ display:flex; flex-wrap:wrap; align-items:center; gap:10px 14px; margin-bottom:16px; }
+      .pagehead h2{ font-size:20px; font-weight:900; margin:0; }
+      .pagehead .desc{ font-size:13px; color:var(--muted); width:100%; margin-top:-6px; }
+      .btn{ border:1px solid var(--line2); background:var(--surface); color:var(--ink); font:inherit; font-size:13.5px; font-weight:700; border-radius:9px; padding:8px 16px; cursor:pointer; min-height:38px; display:inline-flex; align-items:center; gap:7px; }
+      .btn:hover{ border-color:var(--brand2); }
+      .btn.primary{ background:var(--accent); border-color:var(--accent); color:#fff; }
+      .btn.primary:hover{ filter:brightness(1.06); }
+      .btn.ghost{ background:transparent; }
+      .btn.sm{ padding:5px 11px; min-height:32px; font-size:12.5px; }
+      .spacer{ flex:1; }
+
+      /* ============ Cards / KPI ============ */
+      .card{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); }
+      .card .ch{ display:flex; align-items:center; gap:10px; padding:14px 18px 0; }
+      .card .ch h3{ margin:0; font-size:15.5px; font-weight:900; }
+      .card .ch .more{ margin-left:auto; font-size:12.5px; }
+      .card .cb{ padding:12px 18px 16px; }
+      .kpis{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+      .kpi{ padding:15px 17px 13px; }
+      .kpi .lb{ font-size:12.5px; color:var(--muted); font-weight:700; display:flex; align-items:center; gap:7px; }
+      .kpi .vl{ font-family:"Archivo",sans-serif; font-size:31px; font-weight:800; line-height:1.15; margin-top:3px; }
+      .kpi .vl small{ font-size:14px; color:var(--ink2); font-weight:600; }
+      .kpi .ft{ font-size:12.5px; color:var(--ink2); margin-top:2px; }
+      .kpi .ft .up{ color:var(--teal); font-weight:700; }
+      .kpi .ft .dn{ color:var(--red); font-weight:700; }
+      .kpi.alert .vl{ color:var(--accent); }
+      .grid2{ display:grid; grid-template-columns:1.65fr 1fr; gap:12px; margin-top:12px; }
+      .grid2b{ display:grid; grid-template-columns:1fr 1.65fr; gap:12px; margin-top:12px; }
+
+      /* todo list */
+      .todo{ display:flex; flex-direction:column; }
+      .todo button{ border:0; border-bottom:1px solid var(--line); background:transparent; font:inherit; text-align:left; padding:11px 18px; display:flex; align-items:center; gap:11px; cursor:pointer; color:var(--ink); min-height:48px; }
+      .todo button:last-child{ border-bottom:0; }
+      .todo button:hover{ background:var(--surface2); }
+      .todo .ic{ width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; flex:none; }
+      .todo .tt{ font-weight:700; font-size:14px; }
+      .todo .ts{ font-size:12px; color:var(--muted); }
+      .todo .cnt{ margin-left:auto; font-family:"Archivo",sans-serif; font-weight:800; font-size:19px; }
+      .todo .cnt.hot{ color:var(--accent); }
+
+      /* bars */
+      .bar-row{ display:grid; grid-template-columns:86px 1fr 52px; gap:10px; align-items:center; padding:6px 0; font-size:13px; }
+      .bar-row .bl{ color:var(--ink2); font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+      .bar-track{ height:9px; background:var(--chip); border-radius:99px; overflow:hidden; }
+      .bar-fill{ height:100%; border-radius:99px; background:var(--brand2); }
+      .bar-fill.acc{ background:var(--accent); } .bar-fill.tea{ background:var(--teal); } .bar-fill.amb{ background:#d29a1e; }
+      .bar-row .bv{ text-align:right; font-weight:700; font-family:"Archivo",sans-serif; font-size:13px; }
+      .legend{ display:flex; flex-wrap:wrap; gap:6px 16px; font-size:12px; color:var(--muted); margin-top:8px; }
+      .legend i{ display:inline-block; width:9px; height:9px; border-radius:3px; margin-right:5px; }
+
+      /* status flow mini */
+      .flowline{ display:flex; align-items:flex-start; gap:0; padding:6px 2px 2px; }
+      .flowline .fn{ flex:1; text-align:center; position:relative; padding:0 2px; }
+      .flowline .fn::before{ content:""; position:absolute; top:13px; left:-50%; width:100%; height:2px; background:var(--line2); }
+      .flowline .fn:first-child::before{ display:none; }
+      .flowline .fn.done::before{ background:var(--teal); }
+      .flowline .fd{ width:27px; height:27px; border-radius:50%; margin:0 auto; background:var(--surface); border:2px solid var(--line2); color:var(--muted); font-size:12px; font-weight:800; display:flex; align-items:center; justify-content:center; position:relative; z-index:1; font-family:"Archivo",sans-serif; }
+      .flowline .fn.done .fd{ background:var(--teal); border-color:var(--teal); color:#fff; }
+      .flowline .fn.now .fd{ background:var(--accent); border-color:var(--accent); color:#fff; box-shadow:0 0 0 4px var(--accent-soft); }
+      .flowline .fl{ font-size:11.5px; color:var(--ink2); margin-top:6px; line-height:1.35; font-weight:500; }
+      .flowline .fn.now .fl{ color:var(--ink); font-weight:700; }
+
+      /* ============ Tables ============ */
+      .tablebox{ overflow:hidden; }
+      .tabletools{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; padding:12px 14px; border-bottom:1px solid var(--line); }
+      .fbtn{ border:1px solid var(--line); background:var(--surface2); color:var(--ink2); font:inherit; font-size:13px; font-weight:700; border-radius:99px; padding:6px 13px; cursor:pointer; min-height:34px; }
+      .fbtn[aria-pressed="true"]{ background:var(--brand); border-color:var(--brand); color:#fff; }
+      @media (prefers-color-scheme: dark){ .fbtn[aria-pressed="true"]{ background:var(--brand2); border-color:var(--brand2); color:#0a141c; } }
+      .fbtn .n{ opacity:.75; font-weight:500; }
+      table{ width:100%; border-collapse:collapse; font-size:13.5px; }
+      th{ text-align:left; font-size:12px; color:var(--muted); font-weight:700; padding:9px 13px; border-bottom:1px solid var(--line); background:var(--surface2); white-space:nowrap; }
+      td{ padding:10px 13px; border-bottom:1px solid var(--line); vertical-align:middle; }
+      tbody tr:last-child td{ border-bottom:0; }
+      tbody tr.clickable{ cursor:pointer; }
+      tbody tr.clickable:hover td{ background:var(--surface2); }
+      .pill{ display:inline-block; font-size:11.5px; font-weight:700; padding:2px 9px; border-radius:99px; white-space:nowrap; }
+      .pill.s-review{ background:var(--blue-soft); color:var(--blue); }
+      .pill.s-exec{ background:var(--amber-soft); color:var(--amber); }
+      .pill.s-ship{ background:var(--accent-soft); color:var(--accent); }
+      .pill.s-done{ background:var(--teal-soft); color:var(--teal); }
+      .pill.pay-ok{ background:var(--teal-soft); color:var(--teal); }
+      .pill.pay-wait{ background:var(--amber-soft); color:var(--amber); }
+      .pill.pay-no{ background:var(--red-soft); color:var(--red); }
+      .pill.stock-ok{ background:var(--teal-soft); color:var(--teal); }
+      .pill.stock-low{ background:var(--amber-soft); color:var(--amber); }
+      .pill.stock-out{ background:var(--red-soft); color:var(--red); }
+      .flag{ display:inline-flex; align-items:center; gap:5px; font-size:11.5px; font-weight:700; white-space:nowrap; }
+      .flag i{ width:9px; height:9px; border-radius:50%; display:inline-block; }
+      .flag.r i{ background:var(--red); } .flag.r{ color:var(--red); }
+      .flag.y i{ background:#d29a1e; } .flag.y{ color:var(--amber); }
+      .flag.w i{ background:var(--line2); } .flag.w{ color:var(--muted); }
+      .tablenote{ padding:10px 14px; font-size:12.5px; color:var(--muted); border-top:1px solid var(--line); background:var(--surface2); }
+      .empty{ padding:26px 14px; text-align:center; color:var(--muted); font-size:13.5px; }
+
+      /* ============ Claim detail ============ */
+      .backlink{ border:0; background:none; font:inherit; font-size:13.5px; font-weight:700; color:var(--brand2); cursor:pointer; padding:4px 0; margin-bottom:8px; }
+      .detail-grid{ display:grid; grid-template-columns:1.9fr 1fr; gap:12px; align-items:start; }
+      .kv{ display:grid; grid-template-columns:repeat(2,1fr); gap:9px 22px; font-size:13.5px; }
+      .kv .k{ color:var(--muted); font-size:12px; font-weight:700; }
+      .kv .v{ font-weight:500; margin-top:1px; }
+      .secttl{ font-size:13px; font-weight:900; letter-spacing:.04em; color:var(--ink2); margin:18px 0 8px; }
+      .secttl:first-child{ margin-top:0; }
+      .atts{ display:flex; gap:9px; flex-wrap:wrap; }
+      .att{ width:104px; }
+      .att .thumb{ height:72px; border-radius:8px; border:1px solid var(--line); display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:700; text-align:center; padding:6px; }
+      .att .cap{ font-size:11px; color:var(--muted); margin-top:4px; text-align:center; }
+      .log{ list-style:none; margin:0; padding:0; }
+      .log li{ position:relative; padding:0 0 14px 20px; font-size:13px; }
+      .log li::before{ content:""; position:absolute; left:4px; top:6px; width:9px; height:9px; border-radius:50%; background:var(--brand2); }
+      .log li::after{ content:""; position:absolute; left:8px; top:19px; bottom:0; width:2px; background:var(--line); }
+      .log li:last-child::after{ display:none; }
+      .log .lt{ color:var(--muted); font-size:11.5px; }
+      .log .lx{ color:var(--ink2); }
+      .sidebox{ padding:15px 17px; }
+      .sidebox h3{ margin:0 0 10px; font-size:14.5px; font-weight:900; }
+      .sidebox .kv{ grid-template-columns:1fr; gap:8px; }
+      .progress-track{ height:8px; background:var(--chip); border-radius:99px; overflow:hidden; margin:8px 0 4px; }
+      .progress-fill{ height:100%; background:var(--teal); border-radius:99px; }
+
+      /* ============ Parts ============ */
+      .parts{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+      .part{ padding:16px 18px; display:flex; flex-direction:column; gap:5px; }
+      .part .pno{ display:flex; align-items:center; gap:8px; }
+      .part .pno .mono{ font-weight:700; color:var(--brand2); }
+      .part h3{ margin:2px 0 0; font-size:15.5px; font-weight:900; }
+      .part .fit{ font-size:12.5px; color:var(--muted); }
+      .part .meta{ display:flex; flex-wrap:wrap; gap:5px; margin-top:5px; }
+      .part .meta span{ font-size:11px; background:var(--chip); border:1px solid var(--line); border-radius:5px; padding:1px 7px; color:var(--ink2); }
+      .part .prow{ display:flex; align-items:baseline; gap:10px; margin-top:9px; padding-top:10px; border-top:1px dashed var(--line2); }
+      .part .price{ font-family:"Archivo",sans-serif; font-size:19px; font-weight:800; }
+      .part .price small{ font-size:12px; color:var(--muted); font-weight:600; }
+      .part .prow .btn{ margin-left:auto; }
+
+      /* ============ Knowledge ============ */
+      .doclist{ display:flex; flex-direction:column; }
+      .doc{ display:flex; align-items:center; gap:12px; padding:11px 18px; border-bottom:1px solid var(--line); font-size:13.5px; }
+      .doc:last-child{ border-bottom:0; }
+      .doc .dic{ width:34px; height:34px; border-radius:8px; background:var(--blue-soft); color:var(--blue); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:900; flex:none; font-family:"Archivo",sans-serif; }
+      .doc .dn{ font-weight:700; }
+      .doc .dm{ font-size:12px; color:var(--muted); }
+      .doc .right{ margin-left:auto; display:flex; align-items:center; gap:8px; flex:none; }
+      .lvl{ font-size:11px; font-weight:700; padding:2px 8px; border-radius:99px; white-space:nowrap; }
+      .lvl.open{ background:var(--teal-soft); color:var(--teal); }
+      .lvl.auth{ background:var(--amber-soft); color:var(--amber); }
+      .notice{ padding:13px 18px; border-bottom:1px solid var(--line); font-size:13.5px; }
+      .notice:last-child{ border-bottom:0; }
+      .notice .nt{ font-weight:700; display:flex; gap:9px; align-items:center; flex-wrap:wrap; }
+      .notice .nb{ color:var(--ink2); margin-top:3px; font-size:13px; }
+      .notice .nd{ color:var(--muted); font-size:12px; }
+
+      /* ============ Tenants ============ */
+      .tenants{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+      .tenant{ padding:13px 15px; }
+      .tenant .code{ font-family:"Archivo",sans-serif; font-weight:800; font-size:17px; display:flex; align-items:center; gap:8px; }
+      .tenant .code .on-dot{ width:8px; height:8px; border-radius:50%; background:var(--teal); }
+      .tenant .nm{ font-size:13px; color:var(--ink2); }
+      .tenant .rg{ font-size:12px; color:var(--muted); margin-top:2px; }
+      .tenant .stats{ display:flex; gap:14px; margin-top:9px; padding-top:9px; border-top:1px dashed var(--line2); font-size:12px; color:var(--muted); }
+      .tenant .stats b{ color:var(--ink); font-family:"Archivo",sans-serif; font-size:14px; }
+      .yes{ color:var(--teal); font-weight:900; } .no{ color:var(--muted); } .part-y{ color:var(--amber); font-weight:700; }
+
+      /* ============ Modal / toast ============ */
+      .overlay{ position:fixed; inset:0; background:rgba(10,25,34,.52); z-index:60; display:none; align-items:flex-start; justify-content:center; padding:5vh 14px 20px; overflow-y:auto; }
+      .overlay.on{ display:flex; }
+      .modal{ background:var(--surface); border-radius:14px; width:620px; max-width:100%; box-shadow:0 24px 60px -18px rgba(0,0,0,.4); }
+      .modal .mh{ padding:18px 22px 0; display:flex; align-items:center; }
+      .modal .mh h3{ margin:0; font-size:17px; font-weight:900; }
+      .modal .mh .x{ margin-left:auto; }
+      .modal .mb{ padding:14px 22px 6px; }
+      .modal .mf{ padding:12px 22px 20px; display:flex; gap:9px; justify-content:flex-end; }
+      .frow{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px; }
+      .field label{ display:block; font-size:12.5px; font-weight:700; color:var(--ink2); margin-bottom:5px; }
+      .field label .req{ color:var(--accent); }
+      .field input,.field select,.field textarea{ width:100%; font:inherit; font-size:14px; padding:8px 11px; border:1px solid var(--line2); border-radius:8px; background:var(--surface); color:var(--ink); min-height:38px; }
+      .field textarea{ min-height:74px; resize:vertical; }
+      .field .hint{ font-size:11.5px; color:var(--muted); margin-top:3px; }
+      .toast{ position:fixed; left:50%; bottom:26px; transform:translateX(-50%) translateY(20px); background:var(--brand); color:#fff; font-size:14px; font-weight:700; padding:11px 20px; border-radius:10px; box-shadow:0 14px 34px -10px rgba(0,0,0,.4); opacity:0; pointer-events:none; transition:opacity .25s, transform .25s; z-index:80; max-width:92vw; text-align:center; }
+      @media (prefers-color-scheme: dark){ .toast{ background:var(--brand2); color:#0a141c; } }
+      .toast.on{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+      /* ============ Business types / quota / spare / basedata ============ */
+      .bizgrid{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:12px; }
+      .bizcard{ padding:15px 17px; text-align:left; font:inherit; color:var(--ink); cursor:pointer; display:flex; flex-direction:column; gap:4px; width:100%; }
+      .bizcard:hover{ border-color:var(--brand2); }
+      .bizcard .bt{ display:flex; align-items:center; gap:8px; font-weight:900; font-size:15px; }
+      .bizcard .bt .code{ font-family:"Archivo",sans-serif; font-size:11px; font-weight:800; background:var(--brand); color:#fff; border-radius:5px; padding:2px 7px; }
+      @media (prefers-color-scheme: dark){ .bizcard .bt .code{ background:var(--brand2); color:#0a141c; } }
+      .bizcard .bd{ font-size:12.5px; color:var(--ink2); line-height:1.5; }
+      .bizcard .bm{ margin-top:auto; padding-top:8px; font-size:12px; color:var(--muted); display:flex; gap:12px; }
+      .bizcard .bm b{ color:var(--ink); font-family:"Archivo",sans-serif; font-size:14px; }
+      .pill.biz-w{ background:var(--teal-soft); color:var(--teal); }
+      .pill.biz-a{ background:var(--blue-soft); color:var(--blue); }
+      .pill.biz-b{ background:var(--accent-soft); color:var(--accent); }
+      .pill.biz-c{ background:#efe6f7; color:#6b3fa0; }
+      @media (prefers-color-scheme: dark){ .pill.biz-c{ background:#2c2138; color:#c9a8ec; } }
+      .pill.biz-e{ background:var(--red-soft); color:var(--red); }
+      .pill.biz-s{ background:var(--amber-soft); color:var(--amber); }
+      .quota-track{ height:10px; background:var(--chip); border-radius:99px; overflow:hidden; margin:6px 0 3px; }
+      .quota-fill{ height:100%; background:var(--teal); border-radius:99px; }
+      .quota-fill.warn{ background:#d29a1e; } .quota-fill.over{ background:var(--red); }
+      .flowdetail{ display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+      .flowdetail span{ font-size:11.5px; background:var(--surface2); border:1px solid var(--line); border-radius:99px; padding:3px 10px; color:var(--ink2); }
+      .flowdetail span b{ color:var(--ink); }
+      .vinbar{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+      .vinbar input{ font:inherit; font-size:14px; padding:8px 12px; border:1px solid var(--line2); border-radius:8px; background:var(--surface); color:var(--ink); min-height:38px; flex:1; min-width:200px; }
+      .matchchain{ display:flex; flex-wrap:wrap; align-items:center; gap:7px; font-size:13px; margin-top:10px; }
+      .matchchain .mc{ background:var(--surface2); border:1px solid var(--line); border-radius:8px; padding:7px 11px; }
+      .matchchain .mc .k{ font-size:11px; color:var(--muted); font-weight:700; }
+      .matchchain .mc .v{ font-weight:700; }
+      .matchchain .arr{ color:var(--muted); font-weight:900; }
+      @media (max-width:1080px){ .bizgrid{ grid-template-columns:repeat(2,1fr); } }
+      @media (max-width:760px){ .bizgrid{ grid-template-columns:1fr; } }
+
+      footer.appfoot{ padding:16px 24px 22px; font-size:12px; color:var(--muted); display:flex; flex-wrap:wrap; gap:5px 18px; border-top:1px solid var(--line); }
+
+      /* ============ Responsive ============ */
+      @media (max-width:1080px){
+        .kpis{ grid-template-columns:repeat(2,1fr); }
+        .grid2,.grid2b{ grid-template-columns:1fr; }
+        .parts{ grid-template-columns:repeat(2,1fr); }
+        .tenants{ grid-template-columns:repeat(3,1fr); }
+        .detail-grid{ grid-template-columns:1fr; }
+      }
+      @media (max-width:760px){
+        .shell{ grid-template-columns:1fr; }
+        .side{ position:static; height:auto; }
+        .side nav{ flex-direction:row; flex-wrap:wrap; padding:10px 12px; }
+        .side nav .grp{ width:100%; padding:6px 6px 2px; }
+        .side nav button{ width:auto; padding:7px 11px; font-size:13px; min-height:38px; }
+        .side .usercard,.side .envtag{ display:none; }
+        .wrap{ padding:16px 14px 48px; }
+        .topbar{ padding:10px 14px; }
+        .searchbox{ order:5; width:100%; margin-left:0; }
+        .searchbox input{ width:100%; max-width:none; }
+        .parts{ grid-template-columns:1fr; }
+        .tenants{ grid-template-columns:repeat(2,1fr); }
+        .frow,.kv{ grid-template-columns:1fr; }
+        .flowline .fl{ font-size:10.5px; }
+        table, thead, tbody, tr, td{ display:block; width:100%; }
+        thead{ display:none; }
+        tbody tr{ border-bottom:1px solid var(--line); padding:8px 4px; }
+        td{ border-bottom:0; padding:5px 12px; }
+        td::before{ content:attr(data-l); display:block; font-size:11px; color:var(--muted); font-weight:700; margin-bottom:1px; }
+        .doc{ flex-wrap:wrap; }
+      }
+      /* ============ Mobile bottom bar & more sheet (desktop: hidden) ============ */
+      .mobilebar{ display:none; }
+      .moresheet{ display:none; }
+
+      /* ============ Phone-friendly layout (≤760px) ============ */
+      @media (max-width:760px){
+        html{ -webkit-tap-highlight-color:transparent; }
+        body{ font-size:14.5px; }
+
+        /* Slim brand strip on top; page navigation moves to the bottom bar */
+        .side{ position:static; height:auto; }
+        .side .logo{ padding:11px 16px 9px; display:flex; align-items:baseline; gap:10px; border-bottom:0; }
+        .side .logo .t1{ font-size:16px; }
+        .side .logo .t2{ margin-top:0; font-size:10.5px; }
+        .side nav{ display:none; }
+
+        /* Topbar stacks: title + bell, view switch, then full-width search */
+        .topbar{ padding:10px 14px 12px; gap:8px 10px; }
+        .topbar h1{ font-size:17px; }
+        .topbar .sub{ font-size:11.5px; }
+        .topbar .iconbtn{ order:2; margin-left:auto; width:44px; height:44px; flex:none; }
+        .viewctl{ order:4; flex:1 1 100%; }
+        .viewctl label{ display:none; }
+        .viewctl .seg{ flex:1; }
+        .viewctl .seg button{ flex:1; min-height:40px; font-size:14px; }
+        select.tenantSel{ flex:1; min-height:40px; font-size:14px; }
+        .searchbox{ order:5; flex:1 1 100%; margin-left:0; }
+        .searchbox input{ width:100%; max-width:none; min-height:44px; font-size:16px; border-radius:10px; }
+
+        /* Content clears the fixed bottom bar */
+        .wrap{ padding:14px 12px 104px; }
+        footer.appfoot{ padding:14px 14px 104px; }
+
+        /* Bigger touch targets everywhere */
+        .btn{ min-height:44px; padding:9px 15px; }
+        .btn.sm{ min-height:40px; padding:7px 12px; }
+        .fbtn{ min-height:40px; padding:8px 14px; }
+        .field input,.field select,.field textarea,.vinbar input{ font-size:16px; min-height:44px; }
+
+        /* Page heads: actions share one row, description stays readable */
+        .pagehead{ gap:8px; margin-bottom:12px; }
+        .pagehead h2{ font-size:18px; }
+        .pagehead .desc{ font-size:12.5px; line-height:1.6; }
+        .pagehead .btn{ flex:1 1 auto; justify-content:center; }
+        .pagehead .pill{ flex:none; }
+
+        /* KPI & business cards */
+        .kpis{ gap:10px; }
+        .kpi{ padding:12px 13px 11px; }
+        .kpi .vl{ font-size:25px; }
+        .bizcard{ padding:14px 15px; }
+        .card .ch{ padding:13px 14px 0; flex-wrap:wrap; }
+        .card .cb{ padding:11px 14px 14px; }
+        .bar-row{ grid-template-columns:74px 1fr 44px; gap:8px; font-size:12.5px; }
+
+        /* Filter chip rows: one swipeable line instead of a tall wrapped block */
+        .tabletools{ flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch; padding:10px 12px; }
+        .tabletools::-webkit-scrollbar{ display:none; }
+        .tabletools .fbtn,.tabletools select{ flex:none; }
+        .tabletools .spacer{ flex:0 0 2px; }
+        #page-parts .tabletools{ flex-wrap:wrap; overflow:visible; }
+        #partSearch{ flex:1 1 100%; order:9; min-height:44px; font-size:16px; }
+
+        /* Tables become compact label–value cards (one line per field) */
+        tbody tr{ padding:10px 2px; }
+        td{ display:flex; align-items:baseline; gap:10px; padding:4px 12px; min-width:0; }
+        td::before{ flex:0 0 74px; margin-bottom:0; }
+        td .mono{ overflow-wrap:anywhere; }
+        td[data-l="运输进度"]{ display:block; }
+        td[data-l="运输进度"]::before{ margin-bottom:3px; }
+        .tablenote{ font-size:12px; line-height:1.6; }
+
+        /* 7-step progress becomes a vertical timeline */
+        .flowline{ flex-direction:column; align-items:stretch; padding:2px 0; }
+        .flowline .fn{ display:flex; align-items:center; gap:11px; text-align:left; padding:5px 0; }
+        .flowline .fn::before{ left:13px; top:-60%; width:2px; height:120%; }
+        .flowline .fd{ margin:0; flex:none; width:28px; height:28px; }
+        .flowline .fl{ margin-top:0; font-size:13px; }
+
+        /* VIN lookup stacks: input, mode switch, button */
+        .vinbar input{ flex:1 1 100%; }
+        .vinbar .seg{ flex:1; }
+        .vinbar .seg button{ flex:1; min-height:40px; }
+        .vinbar .btn{ flex:1; justify-content:center; }
+        .matchchain{ flex-direction:column; align-items:stretch; }
+        .matchchain .arr{ transform:rotate(90deg); align-self:center; line-height:1; }
+
+        /* Attachments, docs, detail blocks */
+        .att{ width:calc(33.333% - 6px); }
+        .att .thumb{ height:64px; }
+        .doc .right{ width:100%; margin-left:0; justify-content:space-between; }
+        .sidebox{ padding:14px 15px; }
+        #policyKv{ grid-template-columns:1fr !important; }
+        .todo button{ padding:12px 14px; min-height:56px; }
+        .todo .cnt{ font-size:17px; }
+
+        /* Modal becomes a bottom sheet */
+        .overlay{ align-items:flex-end; padding:0; }
+        .modal{ width:100%; border-radius:16px 16px 0 0; max-height:94dvh; overflow-y:auto; }
+        .modal .mh{ padding:16px 16px 0; }
+        .modal .mb{ padding:12px 16px 4px; }
+        .modal .mf{ padding:12px 16px calc(16px + env(safe-area-inset-bottom)); flex-direction:column-reverse; }
+        .modal .mf .btn{ width:100%; justify-content:center; min-height:46px; }
+
+        /* Toast floats above the bottom bar */
+        .toast{ bottom:calc(84px + env(safe-area-inset-bottom)); width:calc(100% - 24px); }
+
+        /* Bottom tab bar */
+        .mobilebar{ display:grid; grid-template-columns:repeat(5,1fr); position:fixed; left:0; right:0; bottom:0; z-index:50; background:color-mix(in srgb, var(--surface) 96%, transparent); backdrop-filter:blur(10px); border-top:1px solid var(--line); padding:5px 4px calc(5px + env(safe-area-inset-bottom)); }
+        .mobilebar button{ border:0; background:transparent; font:inherit; color:var(--muted); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; font-size:11px; font-weight:700; padding:5px 2px; min-height:52px; border-radius:10px; cursor:pointer; position:relative; }
+        .mobilebar button.on{ color:var(--brand2); }
+        .mobilebar button svg{ flex:none; }
+        .mobilebar .mbdg{ position:absolute; top:1px; right:calc(50% - 21px); background:var(--accent); color:#fff; font-size:10px; font-weight:800; line-height:16px; min-width:16px; padding:0 4px; border-radius:99px; text-align:center; }
+        .mobilebar .newfab{ width:44px; height:44px; border-radius:50%; background:var(--accent); color:#fff; display:flex; align-items:center; justify-content:center; margin-top:-20px; border:3px solid var(--bg); box-shadow:0 6px 16px -6px rgba(13,45,60,.45); }
+
+        /* "More" bottom sheet with the remaining pages */
+        .moresheet{ display:none; position:fixed; inset:0; z-index:70; background:rgba(10,25,34,.52); }
+        .moresheet.on{ display:block; }
+        .moresheet .sheet{ position:absolute; left:0; right:0; bottom:0; background:var(--surface); border-radius:16px 16px 0 0; padding:8px 14px calc(12px + env(safe-area-inset-bottom)); max-height:84dvh; overflow-y:auto; }
+        .moresheet.on .sheet{ animation:sheet-in .25s ease-out; }
+        @keyframes sheet-in{ from{ transform:translateY(28px); opacity:.4; } to{ transform:none; opacity:1; } }
+        .moresheet .sheet-hd{ display:flex; align-items:center; padding:8px 4px 6px; }
+        .moresheet .sheet-hd b{ font-size:15.5px; font-weight:900; }
+        .moresheet .sheet-hd .iconbtn{ margin-left:auto; width:40px; height:40px; }
+        .ms-item{ display:flex; width:100%; align-items:center; gap:12px; padding:12px 6px; min-height:52px; border:0; border-bottom:1px solid var(--line); background:transparent; font:inherit; font-size:15px; font-weight:700; color:var(--ink); text-align:left; cursor:pointer; }
+        .ms-item:last-child{ border-bottom:0; }
+        .ms-item svg{ color:var(--brand2); flex:none; }
+        .ms-item .chev{ margin-left:auto; color:var(--muted); }
+        .ms-item .bdg{ margin-left:auto; font-size:11px; font-weight:800; background:var(--chip); color:var(--ink2); border-radius:99px; padding:0 7px; line-height:18px; }
+        .ms-item .bdg + .chev{ margin-left:0; }
+      }
+      @media (max-width:560px){
+        .tenants{ grid-template-columns:1fr; }
+      }
+      @media (max-width:400px){
+        .kpi .vl{ font-size:22px; }
+        .kpi .lb{ font-size:11.5px; }
+        .att{ width:calc(50% - 5px); }
+      }
+
+      @media (prefers-reduced-motion: reduce){
+        html{ scroll-behavior:auto; }
+        .toast{ transition:none; }
+        .moresheet.on .sheet{ animation:none; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <!-- ================= Sidebar ================= -->
+      <aside class="side">
+        <div class="logo">
+          <div class="t1">售后在线平台</div>
+          <div class="t2">WHANLONG AFTER-SALES</div>
+        </div>
+        <nav id="sidenav" aria-label="主导航">
+          <div class="grp">工作</div>
+          <button type="button" data-page="dashboard" class="on">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+            工作台
+          </button>
+          <button type="button" data-page="claims">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg>
+            售后订单<span class="bdg" id="navClaimBdg">17</span>
+          </button>
+          <button type="button" data-page="spare">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg>
+            备件管理<span class="bdg gray">3</span>
+          </button>
+          <button type="button" data-page="orders">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1.6"/><circle cx="19" cy="21" r="1.6"/><path d="M2 3h3l2.6 12.5a2 2 0 0 0 2 1.5h8.7a2 2 0 0 0 2-1.6L22 7H6"/></svg>
+            有偿订单<span class="bdg gray" id="navOrdBdg">5</span>
+          </button>
+          <button type="button" data-page="logistics">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 8h13v9H1zM14 11h4l3 3v3h-7z"/><circle cx="6" cy="19" r="1.8"/><circle cx="17.5" cy="19" r="1.8"/></svg>
+            物流跟踪
+          </button>
+          <div class="grp">资源</div>
+          <button type="button" data-page="parts">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3.2"/><path d="M19 12a7 7 0 0 0-.14-1.4l2-1.55-2-3.46-2.36.95A7 7 0 0 0 14.1 5.1L13.7 2.6h-3.4L9.9 5.1a7 7 0 0 0-2.4 1.44l-2.36-.95-2 3.46 2 1.55a7 7 0 0 0 0 2.8l-2 1.55 2 3.46 2.36-.95a7 7 0 0 0 2.4 1.44l.4 2.5h3.4l.4-2.5a7 7 0 0 0 2.4-1.44l2.36.95 2-3.46-2-1.55c.1-.45.14-.92.14-1.4z"/></svg>
+            配件中心
+          </button>
+          <button type="button" data-page="knowledge">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V2H6.5A2.5 2.5 0 0 0 4 4.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg>
+            知识库
+          </button>
+          <button type="button" data-page="basedata">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>
+            基础数据
+          </button>
+          <div class="grp intonly">管理</div>
+          <button type="button" data-page="analytics" class="intonly">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 15v3M12 10v8M17 6v12"/></svg>
+            数据看板
+          </button>
+          <button type="button" data-page="tenants" class="intonly">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            客户与权限
+          </button>
+        </nav>
+        <div class="usercard">
+          <div class="avatar" id="userAvatar">售</div>
+          <div>
+            <div class="un" id="userName">售后服务部</div>
+            <div class="ur" id="userRole">内部管理员 · 全部客户</div>
+          </div>
+        </div>
+        <div class="envtag">框架演示环境 · 页面数据为示例</div>
+      </aside>
+
+      <div class="main">
+        <!-- ================= Topbar ================= -->
+        <div class="topbar">
+          <div>
+            <h1 id="pageTitle">工作台</h1>
+            <div class="sub" id="pageSub">2026 年 11 月 · 全部直接客户</div>
+          </div>
+          <div class="searchbox">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+            <input type="search" id="globalSearch" placeholder="搜单号 / 车架号 / 配件号" aria-label="全局搜索" />
+          </div>
+          <button type="button" class="iconbtn" id="bellBtn" aria-label="通知">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+            <span class="dot"></span>
+          </button>
+          <div class="viewctl">
+            <label for="tenantSel">视角</label>
+            <div class="seg" role="group" aria-label="视角切换">
+              <button type="button" id="btnInternal" aria-pressed="true">内部</button>
+              <button type="button" id="btnCustomer" aria-pressed="false">客户</button>
+            </div>
+            <select class="tenantSel" id="tenantSel" aria-label="选择客户" disabled>
+              <option value="PDG">PDG</option>
+              <option value="VPS">VPS · Venom</option>
+              <option value="BTL">BTL · Bintelli</option>
+              <option value="AU">澳洲客户</option>
+              <option value="BR">巴西客户</option>
+              <option value="TH">泰国工厂 / RMA</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="wrap">
+          <!-- ================= Dashboard ================= -->
+          <div class="page on" id="page-dashboard">
+            <div class="pagehead" style="margin-bottom:10px"><h2 style="font-size:16px">六类业务 · 一套流程主线</h2><p class="desc">六类业务共用「反馈/下单 → 判定 → 售后订单 → OA 审批 → U8 流转 → 打包报关 → 发货 → 跟踪 → 签收」主线，各类只在判定环节分叉：A 类先判额度、B 类先对车架号与 BOM、错漏发先做调查。点任意一类直接进对应订单。</p></div>
+            <div class="bizgrid" id="bizGrid"></div>
+            <div class="kpis">
+              <div class="kpi card alert">
+                <div class="lb">待处理售后单</div>
+                <div class="vl num" id="kpiPending">17</div>
+                <div class="ft">判定中 6 · 预授权 3 · 待出库 8</div>
+              </div>
+              <div class="kpi card">
+                <div class="lb">本月新提交售后单</div>
+                <div class="vl num">46</div>
+                <div class="ft">较上月 <span class="up">+8.2%</span> · 已关单 31</div>
+              </div>
+              <div class="kpi card">
+                <div class="lb">在途物流</div>
+                <div class="vl num">23 <small>票</small></div>
+                <div class="ft">红标重点跟踪 <span class="dn">4 票</span></div>
+              </div>
+              <div class="kpi card intonly">
+                <div class="lb">本月有偿订单金额</div>
+                <div class="vl num">¥86,400</div>
+                <div class="ft">25 单 · 待付款 5 单</div>
+              </div>
+              <div class="kpi card" style="display:none" id="kpiCustCard">
+                <div class="lb">我的待签收</div>
+                <div class="vl num">3</div>
+                <div class="ft">到货后请及时确认签收</div>
+              </div>
+            </div>
+
+            <div class="grid2">
+              <div class="card">
+                <div class="ch"><h3>最新售后动态</h3><button type="button" class="btn sm ghost more" data-goto="claims">查看全部 →</button></div>
+                <table>
+                  <thead><tr><th>售后单号</th><th>客户</th><th>事项</th><th>状态</th><th>更新</th></tr></thead>
+                  <tbody id="dashClaimBody"></tbody>
+                </table>
+              </div>
+              <div class="card">
+                <div class="ch"><h3>我的待办</h3></div>
+                <div class="todo" id="todoList">
+                  <button type="button" data-goto="claims" data-filter="review">
+                    <span class="ic" style="background:var(--blue-soft);color:var(--blue)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></span>
+                    <span><span class="tt">待判定售后单</span><br /><span class="ts">客户已提交，等待判定业务类型、故障与责任</span></span>
+                    <span class="cnt">6</span>
+                  </button>
+                  <button type="button" data-goto="claims" data-filter="review">
+                    <span class="ic" style="background:var(--red-soft);color:var(--red)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span>
+                    <span><span class="tt">待预授权（超阈值）</span><br /><span class="ts">含 2 单红标重点跟踪，需先批后走 OA</span></span>
+                    <span class="cnt hot">3</span>
+                  </button>
+                  <button type="button" data-goto="claims" data-filter="exec">
+                    <span class="ic" style="background:var(--amber-soft);color:var(--amber)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg></span>
+                    <span><span class="tt">待出库 / 待报关</span><br /><span class="ts">配件已齐套，等待出库单与报关确认</span></span>
+                    <span class="cnt">8</span>
+                  </button>
+                  <button type="button" data-goto="orders">
+                    <span class="ic" style="background:var(--accent-soft);color:var(--accent)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></span>
+                    <span><span class="tt">有偿订单待确认付款</span><br /><span class="ts">客户已下单，等待确认价格库存 / 付款</span></span>
+                    <span class="cnt">5</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid2b">
+              <div class="card">
+                <div class="ch"><h3>故障类型分布</h3><span class="more" style="font-size:12.5px;color:var(--muted)">近 12 个月 · 按配件行</span></div>
+                <div class="cb" id="faultBars"></div>
+              </div>
+              <div class="card">
+                <div class="ch"><h3>售后单处理进度</h3><span class="more" style="font-size:12.5px;color:var(--muted)">在途 128 单所处环节</span></div>
+                <div class="cb">
+                  <div id="stageBars"></div>
+                  <div class="legend"><span><i style="background:var(--blue)"></i>客户环节</span><span><i style="background:var(--brand2)"></i>内部环节</span><span><i style="background:var(--teal)"></i>已完成</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid2">
+              <div class="card intonly">
+                <div class="ch"><h3>免费额度（下单 A）· 本年度</h3><button type="button" class="btn sm ghost more" data-goto="orders">看额度明细 →</button></div>
+                <div class="cb" id="quotaDash"></div>
+              </div>
+              <div class="card">
+                <div class="ch"><h3>客户处备件（产权归 WHL）</h3><button type="button" class="btn sm ghost more" data-goto="spare">进备件管理 →</button></div>
+                <div class="cb">
+                  <p style="margin:0 0 6px;font-size:13.5px;color:var(--ink2)">WHL / RMA / VPS 三处备件仓共 <b>214 件</b>，其中 <b style="color:var(--red)">3 类低于安全库存</b>待按审批计划补货；客户领用须在平台登记，产权不变、定期盘点对账。</p>
+                  <div class="flowdetail"><span>安全库存预警 <b>3 类</b></span><span>本月已领用 <b>17 件</b></span><span>待审批补货计划 <b>2 个</b></span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ================= Claims ================= -->
+          <div class="page" id="page-claims">
+            <div class="pagehead">
+              <h2>售后订单</h2>
+              <span class="pill s-review" id="claimCount"></span>
+              <span class="spacer"></span>
+              <button type="button" class="btn" id="exportBtn">导出台账</button>
+              <button type="button" class="btn primary" id="newClaimBtn">＋ 新建售后单</button>
+              <p class="desc">六类业务统一走售后订单、同一单号贯穿全程：客户反馈 → 售后沟通判定（单据含配件详单）→ 生成售后订单 → OA 审批（售后配件流程 + 物流选择/比价）→ U8 售后生产单内部流转（申购 → 采购 → 到货 → 仓库配送）→ 打包资料上传 / 报关单 → U8 发货单 / 出库单 → 物流发货（物流公司、柜号、快递单）→ 物流跟踪 → 客户签收。点击任意一行查看详情。</p>
+            </div>
+            <div class="card tablebox">
+              <div class="tabletools" style="border-bottom:0;padding-bottom:2px">
+                <span style="font-size:12px;font-weight:700;color:var(--muted)">业务类型</span>
+                <button type="button" class="fbtn bizf" data-biz="all" aria-pressed="true">全部六类</button>
+                <button type="button" class="fbtn bizf" data-biz="w" aria-pressed="false">三包件</button>
+                <button type="button" class="fbtn bizf" data-biz="a" aria-pressed="false">下单 A · 免费额度</button>
+                <button type="button" class="fbtn bizf" data-biz="b" aria-pressed="false">下单 B · 配件采购</button>
+                <button type="button" class="fbtn bizf" data-biz="c" aria-pressed="false">需求 C · 特批赠送</button>
+                <button type="button" class="fbtn bizf" data-biz="e" aria-pressed="false">错漏发 / 运损</button>
+                <button type="button" class="fbtn bizf" data-biz="s" aria-pressed="false">主动备件</button>
+              </div>
+              <div class="tabletools">
+                <button type="button" class="fbtn" data-filter="all" aria-pressed="true">全部</button>
+                <button type="button" class="fbtn" data-filter="review" aria-pressed="false">判定中</button>
+                <button type="button" class="fbtn" data-filter="exec" aria-pressed="false">执行中</button>
+                <button type="button" class="fbtn" data-filter="ship" aria-pressed="false">已发货</button>
+                <button type="button" class="fbtn" data-filter="done" aria-pressed="false">已签收</button>
+                <span class="spacer"></span>
+                <select class="tenantSel" id="claimTenantFilter" aria-label="按客户筛选">
+                  <option value="">全部客户</option>
+                  <option value="PDG">PDG</option>
+                  <option value="VPS">VPS · Venom</option>
+                  <option value="BTL">BTL · Bintelli</option>
+                  <option value="AU">澳洲客户</option>
+                  <option value="BR">巴西客户</option>
+                  <option value="TH">泰国工厂 / RMA</option>
+                </select>
+              </div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>售后单号</th><th>业务类型</th><th>客户</th><th>车架号 / 车型</th><th>事项</th><th>配件</th>
+                    <th>状态</th><th>跟踪</th><th>提交日期</th>
+                    <th class="intonly">OA 编号</th><th class="intonly">责任 / 费用归属</th><th class="intonly">费用（元）</th>
+                  </tr>
+                </thead>
+                <tbody id="claimBody"></tbody>
+              </table>
+              <div class="tablenote" id="claimNote">跟踪标记：红 = 重点跟踪 · 黄 = 关注 · 白 = 正常。客户视角下不显示 OA 编号、责任归属与费用。A 类费用含打包与物流费、计入免费额度；错漏发须先有调查结论才能发起；运损须附客户现场照片。</div>
+            </div>
+          </div>
+
+          <!-- ================= Claim detail ================= -->
+          <div class="page" id="page-claim-detail">
+            <button type="button" class="backlink" id="backToClaims">← 返回售后订单列表</button>
+            <div class="pagehead">
+              <h2 class="mono" id="dTitle" style="font-size:19px">CLM-202611-018</h2>
+              <span class="pill s-exec" id="dStatus">生产中</span>
+              <span class="flag y" id="dFlag"><i></i>黄 · 关注</span>
+              <span class="spacer"></span>
+              <button type="button" class="btn sm" id="dPrintBtn">打印单据</button>
+              <button type="button" class="btn sm primary" id="dActionBtn">推进到下一步</button>
+            </div>
+            <div class="card" style="padding:16px 18px 12px;margin-bottom:12px">
+              <div class="flowline" id="dFlow"></div>
+            </div>
+            <div class="detail-grid">
+              <div class="card" style="padding:18px 20px">
+                <div class="secttl">单据信息</div>
+                <div class="kv" id="dFaultKv"></div>
+                <div class="secttl">事项说明</div>
+                <p style="margin:0;font-size:14px;color:var(--ink2)" id="dDesc"></p>
+                <div id="dBizPanel"></div>
+                <div class="secttl">U8 与打包发货衔接</div>
+                <div class="flowdetail" id="dU8Flow"></div>
+                <div class="secttl">附件（照片 / 视频）</div>
+                <div class="atts" id="dAtts"></div>
+                <div class="secttl">配件明细</div>
+                <table>
+                  <thead><tr><th>配件号</th><th>描述</th><th>数量</th><th>状态</th><th class="intonly">来源</th></tr></thead>
+                  <tbody id="dPartsBody"></tbody>
+                </table>
+                <div class="secttl">处理日志</div>
+                <ul class="log" id="dLog"></ul>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <div class="card sidebox">
+                  <h3>车辆信息</h3>
+                  <div class="kv" id="dVehKv"></div>
+                </div>
+                <div class="card sidebox intonly">
+                  <h3>内部执行信息</h3>
+                  <div class="kv" id="dIntKv"></div>
+                </div>
+                <div class="card sidebox">
+                  <h3>物流信息</h3>
+                  <div class="kv" id="dShipKv"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- ================= Orders ================= -->
+          <div class="page" id="page-orders">
+            <div class="pagehead">
+              <h2>有偿订单（下单 B）</h2>
+              <span class="pill pay-wait">待付款 5 单</span>
+              <span class="spacer"></span>
+              <button type="button" class="btn primary" data-goto="parts">＋ 去配件中心下单</button>
+              <p class="desc">下单 B 是客户采购配件转售：客户在平台提交，或线下确认后由售后代提交。下单前必须确认「单件」还是「单件 + 配套件」，并用准确车架号匹配整车物料号 → BOM，锁定准确配件后再报价。走 ORD 单号，与三包、免费额度分开计价、分开统计；库存与配件中心共用，运费由客户承担。</p>
+            </div>
+            <div class="card intonly" style="margin-bottom:12px">
+              <div class="ch"><h3>免费额度台账（下单 A）· 额度占用在 OA 中体现</h3><span class="more" style="font-size:12.5px;color:var(--muted)">费用口径：配件费 + 打包费 + 物流费</span></div>
+              <div class="cb" id="quotaTable"></div>
+            </div>
+            <div class="card tablebox">
+              <table>
+                <thead>
+                  <tr><th>订单号</th><th>客户</th><th>配件</th><th>金额（元）</th><th>付款状态</th><th>订单状态</th><th>下单日期</th><th>操作</th></tr>
+                </thead>
+                <tbody id="orderBody"></tbody>
+              </table>
+              <div class="tablenote">流程：选件下单 → 内部确认价格与库存 → 客户确认 → 付款 → 出库发货（与三包共用同一条物流链）。</div>
+            </div>
+          </div>
+
+          <!-- ================= Logistics ================= -->
+          <div class="page" id="page-logistics">
+            <div class="pagehead">
+              <h2>物流跟踪</h2>
+              <span class="pill s-ship">在途 23 票</span>
+              <p class="desc">每票货同时挂国内运单号与国际运单号，关联回索赔单 / 有偿订单；红标为重点跟踪件，在列表置顶。</p>
+            </div>
+            <div class="card tablebox">
+              <table>
+                <thead>
+                  <tr><th>关联单号</th><th>客户</th><th>物流商</th><th>国内运单号</th><th>国际运单号</th><th>方式</th><th>发货日期</th><th>运输进度</th><th>跟踪</th></tr>
+                </thead>
+                <tbody id="shipBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- ================= Parts ================= -->
+          <div class="page" id="page-parts">
+            <div class="pagehead">
+              <h2>配件中心</h2>
+              <span class="spacer"></span>
+              <button type="button" class="btn" id="diagramBtn">按爆炸图找件</button>
+              <p class="desc">全平台共用一套配件主数据：三包、免费额度、有偿订购从同一库存扣减。下单 B 选件前先输车架号，系统带出整车物料号、BOM 与车身/座椅颜色，再从 BOM 和爆炸图里选件，避免选错。</p>
+            </div>
+            <div class="card" style="padding:14px 18px;margin-bottom:12px">
+              <div style="font-weight:900;font-size:14.5px;margin-bottom:8px">按车架号找件（下单 B 必走）</div>
+              <div class="vinbar">
+                <input type="text" id="vinInput" placeholder="输入车架号，如 LVY····8842（演示：任意号末四位 8842 / 3175 有档案）" aria-label="车架号" />
+                <div class="seg" role="group" aria-label="订购方式">
+                  <button type="button" id="kitSingle" aria-pressed="true">单件</button>
+                  <button type="button" id="kitSet" aria-pressed="false">单件 + 配套件</button>
+                </div>
+                <button type="button" class="btn primary" id="vinLookupBtn">匹配 BOM</button>
+              </div>
+              <div id="vinResult"></div>
+            </div>
+            <div class="tabletools" style="background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);margin-bottom:12px">
+              <button type="button" class="fbtn pfilter" data-pf="all" aria-pressed="true">全部系统</button>
+              <button type="button" class="fbtn pfilter" data-pf="电控系统" aria-pressed="false">电控系统</button>
+              <button type="button" class="fbtn pfilter" data-pf="驱动系统" aria-pressed="false">驱动系统</button>
+              <button type="button" class="fbtn pfilter" data-pf="车身附件" aria-pressed="false">车身附件</button>
+              <button type="button" class="fbtn pfilter" data-pf="充电系统" aria-pressed="false">充电系统</button>
+              <span class="spacer"></span>
+              <input type="search" id="partSearch" placeholder="配件号 / 名称" aria-label="搜索配件" style="font:inherit;font-size:13.5px;padding:7px 11px;border:1px solid var(--line);border-radius:8px;background:var(--surface2);color:var(--ink);min-height:36px" />
+            </div>
+            <div class="parts" id="partGrid"></div>
+          </div>
+
+          <!-- ================= Knowledge ================= -->
+          <div class="page" id="page-knowledge">
+            <div class="pagehead">
+              <h2>知识库</h2>
+              <p class="desc">三包政策对客户公示、按客户配置、全平台同一口径；维修手册、爆炸图与配件清单都挂到车架号上查。手册分级开放：车主手册登录可见，维修手册与零件图册限授权账号。</p>
+            </div>
+            <div class="grid2" style="margin-top:0">
+              <div class="card">
+                <div class="ch"><h3>手册与图册</h3></div>
+                <div class="doclist">
+                  <div class="doc"><span class="dic">PDF</span><span><span class="dn">高尔夫球车车主手册（英文）</span><br /><span class="dm">Owner's Manual · 2026 版 · 14.2 MB</span></span><span class="right"><span class="lvl open">登录可见</span><button type="button" class="btn sm dl-btn">下载</button></span></div>
+                  <div class="doc"><span class="dic">PDF</span><span><span class="dn">UTV 车主手册（英文）</span><br /><span class="dm">Owner's Manual · 2026 版 · 18.6 MB</span></span><span class="right"><span class="lvl open">登录可见</span><button type="button" class="btn sm dl-btn">下载</button></span></div>
+                  <div class="doc"><span class="dic">PDF</span><span><span class="dn">高尔夫球车维修手册</span><br /><span class="dm">Service Manual · 含工时代码 · 96 MB</span></span><span class="right"><span class="lvl auth">授权账号</span><button type="button" class="btn sm dl-btn">下载</button></span></div>
+                  <div class="doc"><span class="dic">IMG</span><span><span class="dn">零件图册（爆炸图）</span><br /><span class="dm">Parts Catalog · 按车型 / 系统在线查看</span></span><span class="right"><span class="lvl auth">授权账号</span><button type="button" class="btn sm" data-goto="parts">查看</button></span></div>
+                  <div class="doc"><span class="dic">PDF</span><span><span class="dn">定期保养记录表</span><br /><span class="dm">Maintenance Record · 随车主手册附页</span></span><span class="right"><span class="lvl open">登录可见</span><button type="button" class="btn sm dl-btn">下载</button></span></div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="ch"><h3>技术通告与召回</h3><span class="more" style="font-size:12.5px;color:var(--muted)">按车型年份 + 车架号段匹配</span></div>
+                <div>
+                  <div class="notice">
+                    <div class="nt"><span class="pill s-review">强制通告</span>控制器固件升级（2025 款 UTV）</div>
+                    <div class="nb">涉及车架号段 …3000 – …4200。命中车辆提交索赔时将自动带入本通告，可一键生成升级索赔单。</div>
+                    <div class="nd">发布 2026-10-28 · 涉及车辆 214 台</div>
+                  </div>
+                  <div class="notice">
+                    <div class="nt"><span class="pill pay-no">召回</span>充电器线束检查（高尔夫球车）</div>
+                    <div class="nb">涉及车架号段 …7800 – …8150，需更换电池连接线并拍照回传，未完成车辆的后续保修提交将被拦截。</div>
+                    <div class="nd">发布 2026-09-15 · 涉及车辆 96 台</div>
+                  </div>
+                  <div class="notice">
+                    <div class="nt"><span class="pill s-done">一般通告</span>包装规范更新：控制器类配件</div>
+                    <div class="nb">控制器、电机类配件出库须按新规范拍照存档，照片挂在单据附件中。</div>
+                    <div class="nd">发布 2026-11-02</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card" style="margin-top:12px">
+              <div class="ch"><h3>保修政策（当前客户）</h3><span class="more" style="font-size:12.5px;color:var(--muted)" id="policyTenant">内部视角：显示通用政策模板，各客户在此基础上配置</span></div>
+              <div class="cb">
+                <div class="kv" style="grid-template-columns:repeat(3,1fr)" id="policyKv">
+                  <div><div class="k">整车保修期</div><div class="v">交付之日起 12 个月</div></div>
+                  <div><div class="k">电机 / 控制器</div><div class="v">24 个月</div></div>
+                  <div><div class="k">电池（铅酸 / 锂电）</div><div class="v">12 / 24 个月</div></div>
+                  <div><div class="k">保修范围</div><div class="v">材料与制造缺陷导致的故障，免费供件</div></div>
+                  <div><div class="k">不保情形</div><div class="v">人为损坏、改装、事故、自然灾害、易损件正常磨损</div></div>
+                  <div><div class="k">索赔要求</div><div class="v">车架号必填，须附故障照片 / 视频；超阈值索赔先预授权</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ================= Analytics ================= -->
+          <div class="page" id="page-analytics">
+            <div class="pagehead">
+              <h2>数据看板</h2>
+              <span class="pill s-done">内部全量</span>
+              <p class="desc">三包成本与有偿收入分开统计；故障分布、时效与运费按月自动汇总，替代原月度汇总表的人工拼接。</p>
+            </div>
+            <div class="kpis">
+              <div class="kpi card"><div class="lb">本年售后单（累计）</div><div class="vl num">905</div><div class="ft">六类业务合计 · 其中三包件 486 单（与下方分布同口径）</div></div>
+              <div class="kpi card"><div class="lb">本年三包成本</div><div class="vl num">¥412,600</div><div class="ft">其中供应商免费供件占 18%</div></div>
+              <div class="kpi card"><div class="lb">本年有偿收入</div><div class="vl num">¥238,900</div><div class="ft">与三包成本分开核算</div></div>
+              <div class="kpi card"><div class="lb">本年运费总额</div><div class="vl num">¥711,543</div><div class="ft">美国客户占 60 票 · 单均 ¥5,647</div></div>
+            </div>
+            <div class="grid2">
+              <div class="card">
+                <div class="ch"><h3>月度索赔量（单）</h3></div>
+                <div class="cb" id="monthBars"></div>
+              </div>
+              <div class="card">
+                <div class="ch"><h3>平均处理时效（提交 → 发货）</h3></div>
+                <div class="cb">
+                  <div class="bar-row"><span class="bl">全部客户</span><div class="bar-track"><div class="bar-fill" style="width:64%"></div></div><span class="bv">6.4 天</span></div>
+                  <div class="bar-row"><span class="bl">PDG</span><div class="bar-track"><div class="bar-fill tea" style="width:52%"></div></div><span class="bv">5.2 天</span></div>
+                  <div class="bar-row"><span class="bl">VPS · Venom</span><div class="bar-track"><div class="bar-fill tea" style="width:58%"></div></div><span class="bv">5.8 天</span></div>
+                  <div class="bar-row"><span class="bl">BTL · Bintelli</span><div class="bar-track"><div class="bar-fill" style="width:61%"></div></div><span class="bv">6.1 天</span></div>
+                  <div class="bar-row"><span class="bl">澳洲客户</span><div class="bar-track"><div class="bar-fill amb" style="width:79%"></div></div><span class="bv">7.9 天</span></div>
+                  <div class="bar-row"><span class="bl">巴西客户</span><div class="bar-track"><div class="bar-fill acc" style="width:92%"></div></div><span class="bv">9.2 天</span></div>
+                  <p style="font-size:12.5px;color:var(--muted);margin:10px 0 0">时效按工作日计；巴西客户主要受海运与清关周期影响。</p>
+                </div>
+              </div>
+            </div>
+            <div class="card" style="margin-top:12px">
+              <div class="ch"><h3>六类业务量分布（本年 · 按单）</h3><span class="more" style="font-size:12.5px;color:var(--muted)">错漏发单列统计、回溯到销售订单与生产发货</span></div>
+              <div class="cb" id="bizBars"></div>
+            </div>
+            <div class="card" style="margin-top:12px">
+              <div class="ch"><h3>客户三包量排行（本年 · 仅三包件口径）</h3></div>
+              <table>
+                <thead><tr><th>客户</th><th>索赔单</th><th>配件行</th><th>三包成本（元）</th><th>有偿订单（元）</th><th>运费（元）</th><th>红标单</th></tr></thead>
+                <tbody id="rankBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- ================= Spare parts at customers ================= -->
+          <div class="page" id="page-spare">
+            <div class="pagehead">
+              <h2>备件管理</h2>
+              <span class="pill stock-low">3 类低于安全库存</span>
+              <span class="spacer"></span>
+              <button type="button" class="btn primary" id="sparePlanBtn">＋ 按计划发起备件单</button>
+              <p class="desc">WHL / RMA / VPS 主动备件：产权归 WHL，存放在客户处备用。备件不零散申请——按已审批的备件计划成批发起，计划外领用要补审批；客户领用登记后就近先用、后补三包/付费单据，平台按月对账、定期盘点。</p>
+            </div>
+            <div class="kpis" style="margin-bottom:12px">
+              <div class="kpi card"><div class="lb">客户处备件总量</div><div class="vl num">214 <small>件</small></div><div class="ft">分布在 3 个备件点</div></div>
+              <div class="kpi card alert"><div class="lb">低于安全库存</div><div class="vl num">3 <small>类</small></div><div class="ft">控制器、充电器、电池连接线</div></div>
+              <div class="kpi card"><div class="lb">本月领用登记</div><div class="vl num">17 <small>件</small></div><div class="ft">已补关联单据 15 件 · 待补 2 件</div></div>
+              <div class="kpi card"><div class="lb">待审批备件计划</div><div class="vl num">2 <small>个</small></div><div class="ft">VPS 季度补货 · RMA 泰国仓补货</div></div>
+            </div>
+            <div class="card tablebox">
+              <table>
+                <thead><tr><th>备件点</th><th>配件</th><th>产权</th><th>现存</th><th>安全库存</th><th>本月领用</th><th>状态</th><th>操作</th></tr></thead>
+                <tbody id="spareBody"></tbody>
+              </table>
+              <div class="tablenote">流程：备件计划审批 → 生成备件单 → 与正常售后单同一条 U8 / 打包 / 物流链发出 → 客户签收上架 → 领用登记 → 月度对账与盘点。备件费用不计入客户免费额度。</div>
+            </div>
+          </div>
+
+          <!-- ================= Base data ================= -->
+          <div class="page" id="page-basedata">
+            <div class="pagehead">
+              <h2>基础数据</h2>
+              <span class="pill s-review">6 类主数据</span>
+              <p class="desc">售后能不能选对件，靠的是这层数据：车架号先对上整车，再对上 BOM 和颜色，最后落到爆炸图上的具体配件。数据分散在生产、U8 和销售订单里，平台只做汇集与匹配，不另建一套。</p>
+            </div>
+            <div class="card" style="padding:14px 18px;margin-bottom:12px">
+              <div style="font-weight:900;font-size:14.5px;margin-bottom:8px">车架号一键查整车档案（演示）</div>
+              <div class="vinbar">
+                <input type="text" id="bdVinInput" placeholder="输入车架号末四位：8842（高尔夫球车）或 3175（UTV）" aria-label="车架号查询" />
+                <button type="button" class="btn primary" id="bdVinBtn">查询</button>
+              </div>
+              <div id="bdVinResult"></div>
+            </div>
+            <div class="card tablebox">
+              <table>
+                <thead><tr><th>数据</th><th>现在在哪</th><th>平台里用来做什么</th><th>维护方式</th><th>现状</th></tr></thead>
+                <tbody>
+                  <tr><td data-l="数据"><b>车架号 ↔ 整车大号（整车物料号）</b></td><td data-l="现在在哪">生产</td><td data-l="用途">输车架号带出整车，是所有匹配的起点</td><td data-l="维护方式">随生产数据同步</td><td data-l="现状"><span class="pill s-done">可对接</span></td></tr>
+                  <tr><td data-l="数据"><b>整车大号 ↔ BOM</b></td><td data-l="现在在哪">U8</td><td data-l="用途">由整车定位准确配件，下单 B 选件依据</td><td data-l="维护方式">随 U8 BOM 版本更新</td><td data-l="现状"><span class="pill s-done">可对接</span></td></tr>
+                  <tr><td data-l="数据"><b>销售订单信息</b></td><td data-l="现在在哪">销售订单</td><td data-l="用途">查这台车的车身颜色、座椅具体颜色与配置</td><td data-l="维护方式">按订单号关联</td><td data-l="现状"><span class="pill s-exec">关联中</span></td></tr>
+                  <tr><td data-l="数据"><b>车架号 ↔ 颜色匹配</b></td><td data-l="现在在哪">生产；RMA 的 loading detail 里也有</td><td data-l="用途">颜色件（外壳、座椅）下单前先核对颜色</td><td data-l="维护方式">两处数据互相校验</td><td data-l="现状"><span class="pill s-exec">关联中</span></td></tr>
+                  <tr><td data-l="数据"><b>爆炸图 — 配件清单（按车架号匹配）</b></td><td data-l="现在在哪">图册 / 配件清单</td><td data-l="用途">在图上点选配件，带出配件号与配套关系</td><td data-l="维护方式">新状态车辆后续维护更新、自动匹配；旧状态暂靠人工查询，逐步补齐</td><td data-l="现状"><span class="pill s-ship">部分匹配</span></td></tr>
+                  <tr><td data-l="数据"><b>维修手册 · 三包政策公示</b></td><td data-l="现在在哪">知识库</td><td data-l="用途">判定与维修依据；政策对客户公示、全平台同一口径</td><td data-l="维护方式">版本更新时替换并留旧版</td><td data-l="现状"><span class="pill s-done">已上线</span></td></tr>
+                </tbody>
+              </table>
+              <div class="tablenote">匹配不上的老车不硬套：平台给出「人工查询」提示，由售后按旧办法核对后回填结果，回填一次、下次自动命中。</div>
+            </div>
+          </div>
+
+          <!-- ================= Tenants ================= -->
+          <div class="page" id="page-tenants">
+            <div class="pagehead">
+              <h2>客户与权限</h2>
+              <span class="pill s-done">13 个直接客户已开通</span>
+              <span class="spacer"></span>
+              <button type="button" class="btn primary" id="newTenantBtn">＋ 新建客户账号</button>
+              <p class="desc">一个直接客户一个租户，账号由内部管理员统一创建；客户只能看本租户数据，不能为下一级 dealer 开账号。</p>
+            </div>
+            <div class="tenants" id="tenantGrid"></div>
+            <div class="card tablebox" style="margin-top:14px">
+              <div class="tabletools"><span style="font-weight:900;font-size:15px">角色权限矩阵</span></div>
+              <table>
+                <thead><tr><th>能力</th><th>内部管理员</th><th>内部执行</th><th>客户管理员</th><th>客户提交 / 查看</th></tr></thead>
+                <tbody>
+                  <tr><td data-l="能力">创建租户与账号、配置保修政策</td><td data-l="内部管理员"><span class="yes">✓</span></td><td data-l="内部执行"><span class="no">—</span></td><td data-l="客户管理员"><span class="no">—</span></td><td data-l="客户提交/查看"><span class="no">—</span></td></tr>
+                  <tr><td data-l="能力">预审、预授权、OA / 生产 / 出库</td><td data-l="内部管理员"><span class="yes">✓</span></td><td data-l="内部执行"><span class="yes">✓</span></td><td data-l="客户管理员"><span class="no">—</span></td><td data-l="客户提交/查看"><span class="no">—</span></td></tr>
+                  <tr><td data-l="能力">提交索赔 / 有偿下单</td><td data-l="内部管理员"><span class="part-y">代提交</span></td><td data-l="内部执行"><span class="no">—</span></td><td data-l="客户管理员"><span class="yes">✓</span></td><td data-l="客户提交/查看"><span class="yes">✓</span></td></tr>
+                  <tr><td data-l="能力">查看进度与物流、签收确认</td><td data-l="内部管理员"><span class="yes">✓ 全量</span></td><td data-l="内部执行"><span class="yes">✓ 全量</span></td><td data-l="客户管理员"><span class="yes">✓ 本租户</span></td><td data-l="客户提交/查看"><span class="yes">✓ 本租户</span></td></tr>
+                  <tr><td data-l="能力">成本、单价、供应商信息</td><td data-l="内部管理员"><span class="yes">✓</span></td><td data-l="内部执行"><span class="part-y">部分</span></td><td data-l="客户管理员"><span class="no">—</span></td><td data-l="客户提交/查看"><span class="no">—</span></td></tr>
+                  <tr><td data-l="能力">给下一级 dealer 开账号</td><td data-l="内部管理员"><span class="no">— 不开放</span></td><td data-l="内部执行"><span class="no">—</span></td><td data-l="客户管理员"><span class="no">— 不开放</span></td><td data-l="客户提交/查看"><span class="no">—</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <footer class="appfoot">
+          <span>五环龙售后在线平台</span>
+          <span>服务对象：直接客户（品牌商 / 进口商）· 不面向终端客户与下一级 dealer</span>
+          <span>支持：售后服务部</span>
+        </footer>
+      </div>
+    </div>
+
+    <!-- ================= New claim modal ================= -->
+    <div class="overlay" id="claimModal" role="dialog" aria-modal="true" aria-labelledby="cmTitle">
+      <div class="modal">
+        <div class="mh"><h3 id="cmTitle">新建售后单</h3><button type="button" class="iconbtn x" data-close aria-label="关闭">✕</button></div>
+        <form id="claimForm">
+          <div class="mb">
+            <div class="frow">
+              <div class="field"><label for="fBiz">业务类型<span class="req">*</span></label>
+                <select id="fBiz" required>
+                  <option value="w">三包件（质量问题 / 技术升级）</option>
+                  <option value="a">客户下单 A · 免费额度件</option>
+                  <option value="b">客户下单 B · 配件采购</option>
+                  <option value="c">客户需求 C · 特批赠送件</option>
+                  <option value="e">销售订单错漏发 / 运损</option>
+                  <option value="s">WHL / RMA / VPS 主动备件</option>
+                </select><div class="hint" id="fBizHint">判定通过后生成售后订单，流程与 C 类相同主线</div></div>
+              <div class="field"><label for="fTenant">所属客户</label>
+                <select id="fTenant"><option value="PDG">PDG</option><option value="VPS">VPS · Venom</option><option value="BTL">BTL · Bintelli</option><option value="AU">澳洲客户</option><option value="BR">巴西客户</option><option value="TH">泰国工厂 / RMA</option></select></div>
+            </div>
+            <div class="frow">
+              <div class="field"><label for="fVin">车架号（VIN）<span class="req">*</span></label><input id="fVin" required placeholder="如 LVY…8842" /><div class="hint">系统匹配整车大号 → BOM → 颜色，并判定保修期；B 类必填且须准确</div></div>
+              <div class="field"><label for="fModel">车型<span class="req">*</span></label>
+                <select id="fModel" required><option value="高尔夫球车">高尔夫球车</option><option value="UTV">UTV</option></select></div>
+            </div>
+            <div class="frow">
+              <div class="field"><label for="fFault">事项类型<span class="req">*</span></label>
+                <select id="fFault" required>
+                  <option>质量问题</option><option>技术升级</option><option>免费额度申领</option><option>配件采购</option><option>特批赠送</option><option>漏发</option><option>错发</option><option>运输损坏</option><option>主动备件补货</option>
+                </select></div>
+              <div class="field"><label for="fDate">发生日期<span class="req">*</span></label><input id="fDate" type="date" required value="2026-11-20" /></div>
+            </div>
+            <div class="field" style="margin-bottom:12px" id="fExtraWrap"><label for="fExtra" id="fExtraLabel">补充说明</label><textarea id="fExtra" placeholder="A 类：本单预估费用（含打包物流费）与剩余额度；B 类：单件 / 单件+配套件；错漏发：客户依据与生产发货依据、调查结论；运损：须附现场照片"></textarea></div>
+            <div class="field" style="margin-bottom:12px"><label for="fDesc">故障描述<span class="req">*</span></label><textarea id="fDesc" required placeholder="描述故障现象、发生场景，可附照片 / 视频（提交后在详情页上传）"></textarea></div>
+            <div class="field" style="margin-bottom:4px"><label for="fPart">所需配件（配件详单，可多行）</label><input id="fPart" placeholder="如 控制器 ×1（提交后在详情页按 BOM / 爆炸图逐行确认）" /></div>
+          </div>
+          <div class="mf">
+            <button type="button" class="btn" data-close>取消</button>
+            <button type="submit" class="btn primary">提交并进入判定</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ================= Mobile bottom bar & more sheet (≤760px only) ================= -->
+    <nav class="mobilebar" aria-label="手机端主导航">
+      <button type="button" data-mpage="dashboard" class="on">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+        工作台
+      </button>
+      <button type="button" data-mpage="claims">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg>
+        售后订单<span class="mbdg">17</span>
+      </button>
+      <button type="button" id="mobileNewBtn" aria-label="新建售后单">
+        <span class="newfab"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></span>
+        新建
+      </button>
+      <button type="button" data-mpage="parts">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3.2"/><path d="M19 12a7 7 0 0 0-.14-1.4l2-1.55-2-3.46-2.36.95A7 7 0 0 0 14.1 5.1L13.7 2.6h-3.4L9.9 5.1a7 7 0 0 0-2.4 1.44l-2.36-.95-2 3.46 2 1.55a7 7 0 0 0 0 2.8l-2 1.55 2 3.46 2.36-.95a7 7 0 0 0 2.4 1.44l.4 2.5h3.4l.4-2.5a7 7 0 0 0 2.4-1.44l2.36.95 2-3.46-2-1.55c.1-.45.14-.92.14-1.4z"/></svg>
+        配件中心
+      </button>
+      <button type="button" id="mobileMoreBtn" aria-label="更多功能">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        更多
+      </button>
+    </nav>
+
+    <div class="moresheet" id="moreSheet" role="dialog" aria-modal="true" aria-label="全部功能">
+      <div class="sheet">
+        <div class="sheet-hd"><b>全部功能</b><button type="button" class="iconbtn" id="msClose" aria-label="关闭">✕</button></div>
+        <button type="button" class="ms-item" data-mpage="spare">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg>
+          备件管理<span class="bdg">3 类预警</span><span class="chev">›</span>
+        </button>
+        <button type="button" class="ms-item" data-mpage="orders">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1.6"/><circle cx="19" cy="21" r="1.6"/><path d="M2 3h3l2.6 12.5a2 2 0 0 0 2 1.5h8.7a2 2 0 0 0 2-1.6L22 7H6"/></svg>
+          有偿订单<span class="bdg">5</span><span class="chev">›</span>
+        </button>
+        <button type="button" class="ms-item" data-mpage="logistics">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 8h13v9H1zM14 11h4l3 3v3h-7z"/><circle cx="6" cy="19" r="1.8"/><circle cx="17.5" cy="19" r="1.8"/></svg>
+          物流跟踪<span class="chev">›</span>
+        </button>
+        <button type="button" class="ms-item" data-mpage="knowledge">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V2H6.5A2.5 2.5 0 0 0 4 4.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg>
+          知识库<span class="chev">›</span>
+        </button>
+        <button type="button" class="ms-item" data-mpage="basedata">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>
+          基础数据<span class="chev">›</span>
+        </button>
+        <button type="button" class="ms-item intonly" data-mpage="analytics">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 15v3M12 10v8M17 6v12"/></svg>
+          数据看板<span class="chev">›</span>
+        </button>
+        <button type="button" class="ms-item intonly" data-mpage="tenants">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          客户与权限<span class="chev">›</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="toast" id="toast" role="status"></div>
+
+    <script>
+      /* ================= Data ================= */
+      var STEPS = ["反馈 / 下单","沟通判定","OA 审批","U8 流转","打包 / 报关","发货 / 物流","签收确认"];
+      var BIZ = {
+        w:{ tx:"三包件", cls:"biz-w", code:"三包" },
+        a:{ tx:"下单 A · 免费额度", cls:"biz-a", code:"A" },
+        b:{ tx:"下单 B · 配件采购", cls:"biz-b", code:"B" },
+        c:{ tx:"需求 C · 特批赠送", cls:"biz-c", code:"C" },
+        e:{ tx:"错漏发 / 运损", cls:"biz-e", code:"补发" },
+        s:{ tx:"主动备件", cls:"biz-s", code:"备件" }
+      };
+      var U8FLOW = "<span><b>U8 售后生产单</b> 申购 → 采购 → 到货 → 仓库配送</span><span><b>打包资料</b> 上传 · 报关单</span><span><b>U8 发货单 / 出库单</b></span><span><b>物流发货</b> 物流公司 · 柜号 · 快递单号</span><span><b>OA</b> 售后配件流程 · 物流选择 / 比价留痕</span>";
+      var claims = [
+        { id:"CLM-202611-018", tenant:"PDG", tenantNm:"PDG", vinTail:"8842", model:"高尔夫球车", fault:"质量问题", part:"控制器 ×1", st:"exec", stTx:"生产中", trk:"y", trkTx:"黄 · 关注", oa:"OA-2214", resp:"公司承担", fee:"—", date:"2026-11-12", stage:3,
+          desc:"车辆行驶中突然断电，仪表无显示。重启后可短暂恢复，约 200 米后再次断电。已排除电池电量与接插件松动，初步判断控制器功率模块故障。",
+          parts:[["WL-CTL-2201","控制器 48V/275A","1","生产中","公司承担"]],
+          veh:[["车架号","LVY····8842"],["车型","高尔夫球车 4 座"],["交付日期","2025-08-14"],["保修状态","在保（整车至 2026-08）"]],
+          intl:[["OA 编号","OA-2214"],["OA 提交 / 通过","11-13 09:20 / 11-13 16:40"],["生产单号","SC-8812（已下发）"],["出库单号","待出库"],["责任归属","公司承担"]],
+          ship:[["物流商","待安排"],["国内运单号","—"],["国际运单号","—"],["预计发货","配件齐套后 2 个工作日内"]],
+          atts:[["#37536b","故障视频","VID · 0:42"],["#5b7a8c","仪表照片","IMG · 故障码"],["#7a5b3a","铭牌照片","IMG · 车架号"]],
+          log:[["2026-11-12 15:03","PDG 提交索赔，附故障视频与仪表照片"],["2026-11-13 09:20","内部预审通过：判定质量问题，责任归属公司承担"],["2026-11-13 16:40","OA 审批通过（OA-2214）"],["2026-11-14 10:15","无库存，转生产单 SC-8812"]] },
+        { id:"CLM-202611-021", tenant:"VPS", tenantNm:"VPS · Venom", vinTail:"3175", model:"UTV", fault:"运输损坏", part:"前保险杠 ×1、贴纸 ×2", st:"ship", stTx:"已发货", trk:"r", trkTx:"红 · 重点", oa:"OA-2231", resp:"公司承担", fee:"8,240", date:"2026-11-14", stage:5,
+          desc:"到货开箱发现前保险杠左侧变形、漆面划伤，判断为海运途中挤压所致。外包装有明显受压痕迹，已附开箱照片。",
+          parts:[["WL-BMP-UT07","前保险杠（UTV）","1","已出库","公司承担"],["WL-STK-0112","车身贴纸套装","2","已出库","公司承担"]],
+          veh:[["车架号","LVU····3175"],["车型","UTV 1000"],["交付日期","2026-03-02"],["保修状态","在保"]],
+          intl:[["OA 编号","OA-2231"],["OA 提交 / 通过","11-15 10:02 / 11-15 15:26"],["生产单号","—（现货）"],["出库单号","CK-3391"],["责任归属","公司承担（运输损坏）"]],
+          ship:[["物流商","捷报"],["国内运单号","JB20261118032"],["国际运单号","MAEU 8841-2207"],["预计到货","2026-12-06"]],
+          atts:[["#6b3737","开箱照片","IMG · 变形处"],["#37536b","包装照片","IMG · 出库存档"]],
+          log:[["2026-11-14 11:22","VPS 提交索赔（运输损坏）"],["2026-11-15 15:26","预审与 OA 审批通过"],["2026-11-18 09:41","出库 CK-3391，捷报揽收"],["2026-11-19 08:10","国际运单生成，海运在途（红标跟踪）"]] },
+        { id:"CLM-202611-024", tenant:"BTL", tenantNm:"BTL · Bintelli", vinTail:"9026", model:"高尔夫球车", fault:"漏发", part:"充电器 ×1", st:"review", stTx:"预审中", trk:"w", trkTx:"白 · 正常", oa:"—", resp:"待判定", fee:"—", date:"2026-11-18", stage:1,
+          desc:"随车应配充电器未到货，客户清点整批车辆时发现本车缺充电器一只，申请补发。",
+          parts:[["WL-CHG-4805","充电器 48V/15A","1","待判定","—"]],
+          veh:[["车架号","LVY····9026"],["车型","高尔夫球车 6 座"],["交付日期","2026-10-21"],["保修状态","在保"]],
+          intl:[["OA 编号","—"],["OA 提交 / 通过","—"],["生产单号","—"],["出库单号","—"],["责任归属","待判定"]],
+          ship:[["物流商","待安排"],["国内运单号","—"],["国际运单号","—"],["预计发货","—"]],
+          atts:[["#5b7a8c","清点照片","IMG · 随车清单"]],
+          log:[["2026-11-18 14:37","BTL 提交索赔（漏发），等待内部核对发货清单"]] },
+        { id:"CLM-202611-009", tenant:"AU", tenantNm:"澳洲客户", vinTail:"5510", model:"UTV", fault:"质量问题", part:"电机 ×1、线束 ×1", st:"done", stTx:"已签收", trk:"w", trkTx:"白 · 正常", oa:"OA-2150", resp:"供应商免费", fee:"11,930", date:"2026-11-04", stage:7,
+          desc:"电机异响并伴随动力下降，拆检发现绕组烧蚀。经判定为供应商批次问题，电机与线束由供应商免费提供。",
+          parts:[["WL-MOT-7500","驱动电机 7.5kW","1","已签收","供应商免费"],["WL-HAR-UT21","电机线束","1","已签收","供应商免费"]],
+          veh:[["车架号","LVU····5510"],["车型","UTV 1000"],["交付日期","2025-11-19"],["保修状态","在保（电机 24 个月）"]],
+          intl:[["OA 编号","OA-2150"],["OA 提交 / 通过","11-05 09:12 / 11-05 14:03"],["生产单号","—（供应商直供）"],["出库单号","CK-3277"],["责任归属","供应商免费提供"]],
+          ship:[["物流商","影子"],["国内运单号","YZ20261106018"],["国际运单号","OOLU 5520-8814"],["签收日期","2026-11-19"]],
+          atts:[["#37536b","拆检照片","IMG · 绕组"],["#5b7a8c","包装照片","IMG · 出库存档"]],
+          log:[["2026-11-04 10:05","澳洲客户提交索赔"],["2026-11-05 14:03","OA 审批通过，判定供应商责任"],["2026-11-06 16:20","出库并发出（影子物流）"],["2026-11-19 09:44","客户确认签收，关单"]] },
+        { id:"CLM-202611-027", tenant:"TH", tenantNm:"泰国工厂 / RMA", vinTail:"6633", model:"UTV", fault:"错发", part:"仪表 ×1", st:"exec", stTx:"出库中", trk:"y", trkTx:"黄 · 关注", oa:"OA-2240", resp:"公司承担", fee:"—", date:"2026-11-16", stage:4,
+          desc:"RMA 返修随附仪表型号与清单不符（应发 UT 款、实发 GC 款），申请换发正确型号，错发件随下批货退回。",
+          parts:[["WL-DSH-UT03","仪表总成（UTV 款）","1","出库中","公司承担"]],
+          veh:[["车架号","LVU····6633"],["车型","UTV 800"],["交付日期","2026-01-11"],["保修状态","在保"]],
+          intl:[["OA 编号","OA-2240"],["OA 提交 / 通过","11-17 08:47 / 11-17 13:19"],["生产单号","—（现货）"],["出库单号","CK-3410（出库中）"],["责任归属","公司承担（错发）"]],
+          ship:[["物流商","顺丰"],["国内运单号","待揽收"],["国际运单号","—"],["预计发货","2026-11-21"]],
+          atts:[["#7a5b3a","错发件照片","IMG · 型号对比"]],
+          log:[["2026-11-16 13:28","泰国工厂提交 RMA 换发申请"],["2026-11-17 13:19","OA 审批通过"],["2026-11-20 09:02","出库中，待顺丰揽收"]] },
+        { id:"CLM-202611-030", tenant:"BR", tenantNm:"巴西客户", vinTail:"2077", model:"高尔夫球车", fault:"技术升级", part:"升级套件 ×1", st:"ship", stTx:"已发货", trk:"w", trkTx:"白 · 正常", oa:"OA-2246", resp:"公司承担", fee:"15,480", date:"2026-11-15", stage:5,
+          desc:"按技术通告对在库车辆做控制器固件与线束升级，申请下发升级套件一套。",
+          parts:[["WL-UPG-KIT2","技术升级套件","1","已出库","公司承担"]],
+          veh:[["车架号","LVY····2077"],["车型","高尔夫球车 4 座"],["交付日期","2025-06-30"],["保修状态","在保"]],
+          intl:[["OA 编号","OA-2246"],["OA 提交 / 通过","11-16 09:31 / 11-16 17:05"],["生产单号","—（现货）"],["出库单号","CK-3422"],["责任归属","公司承担（技术升级）"]],
+          ship:[["物流商","影子"],["国内运单号","YZ20261119045"],["国际运单号","MSCU 7712-0931"],["预计到货","2026-12-18（海运）"]],
+          atts:[["#37536b","包装照片","IMG · 出库存档"]],
+          log:[["2026-11-15 16:12","巴西客户按技术通告提交升级申请"],["2026-11-16 17:05","OA 审批通过"],["2026-11-19 11:36","出库发出，海运在途"]] },
+        { id:"CLM-202611-033", tenant:"PDG", tenantNm:"PDG", vinTail:"1189", model:"高尔夫球车", fault:"质量问题", part:"电池连接线 ×2", st:"review", stTx:"待预授权", trk:"r", trkTx:"红 · 重点", oa:"—", resp:"待判定", fee:"—", date:"2026-11-19", stage:1,
+          desc:"电池连接线端子过热熔蚀，涉及同批车辆 12 台。客户申请整批更换，本单金额超预授权阈值，须先预授权再走 OA。该车型另有线束检查召回通告关联。",
+          parts:[["WL-CAB-BT12","电池连接线","2","待预授权","待判定"]],
+          veh:[["车架号","LVY····1189"],["车型","高尔夫球车 4 座"],["交付日期","2025-09-08"],["保修状态","在保 · 关联召回通告"]],
+          intl:[["OA 编号","—（待预授权）"],["OA 提交 / 通过","—"],["生产单号","—"],["出库单号","—"],["责任归属","待判定"]],
+          ship:[["物流商","待安排"],["国内运单号","—"],["国际运单号","—"],["预计发货","—"]],
+          atts:[["#6b3737","端子照片","IMG · 熔蚀处"],["#37536b","同批清单","PDF · 12 台"]],
+          log:[["2026-11-19 10:48","PDG 提交索赔，系统标记超预授权阈值"],["2026-11-19 10:48","关联召回通告：充电器线束检查（车架号段 …7800–…8150 外，本车为同批风险件）"]] }
+      ];
+      /* 既有示例单的业务归类与判定说明（与下方新增单一致） */
+      var BIZNOTE = {
+        "CLM-202611-018":"<b>三包判定：</b>沟通判定为质量问题、在保，配件详单已随单提交；超阈值规则不触发，直接生成售后订单走 OA。",
+        "CLM-202611-021":"<b>运损判定：</b>客户已附开箱与现场照片，外包装受压痕迹清楚，判定运输损坏、公司承担；照片不全的运损单不予发起。",
+        "CLM-202611-024":"<b>错漏发调查：</b>客户依据——整批清点记录与随车清单；生产发货依据——出库清单与装箱单正在核对。调查结论出来后才发起补发流程。",
+        "CLM-202611-009":"<b>三包判定：</b>拆检确认供应商批次问题，电机与线束由供应商免费提供，不占公司三包成本口径中的自担部分。",
+        "CLM-202611-027":"<b>错漏发调查：</b>对象为发泰国的 RMA 件；客户依据——实收仪表型号照片；生产发货依据——拣货与复核记录。结论：仓库拣货错发，换发正确型号、错发件随下批货退回。",
+        "CLM-202611-030":"<b>三包判定：</b>按技术通告发起的技术升级，命中车架号段自动带入通告，配件为升级套件。",
+        "CLM-202611-033":"<b>三包判定：</b>同批 12 台风险件，金额超预授权阈值，须先预授权再走 OA；已关联线束检查召回通告。"
+      };
+      claims.forEach(function(c){
+        if (c.id === "CLM-202611-024" || c.id === "CLM-202611-027" || c.id === "CLM-202611-021") c.biz = "e";
+        else c.biz = "w";
+        c.bizNote = BIZNOTE[c.id] || "";
+      });
+      claims.push(
+        { id:"ASO-202611-041", biz:"a", tenant:"BTL", tenantNm:"BTL · Bintelli", vinTail:"—", model:"高尔夫球车", fault:"免费额度申领", part:"座椅套 ×6、方向盘 ×4", st:"review", stTx:"额度判定中", trk:"w", trkTx:"白 · 正常", oa:"OA-2251（额度单）", resp:"免费额度内", fee:"9,860", date:"2026-11-19", stage:1,
+          desc:"BTL 按销售额 1.5% 免费额度申领常用件一批。本单费用含配件费、打包费与物流费，须先过额度判定、并在 OA 中体现占用后才生成正式售后订单。",
+          bizNote:"<b>额度判定（OA 同步体现）：</b>BTL 本年度销售额对应免费额度 ¥186,000，已用 ¥142,300，本单 ¥9,860（配件 ¥8,120 + 打包 ¥340 + 物流 ¥1,400），批后剩余额度 ¥33,840。超额部分自动转下单 B 付费。",
+          parts:[["WL-SEA-GC06","座椅套装","6","待判定","免费额度"],["WL-STR-GC02","方向盘","4","待判定","免费额度"]],
+          veh:[["车架号","—（额度件不绑单车）"],["车型","高尔夫球车"],["交付日期","—"],["保修状态","—"]],
+          intl:[["OA 编号","OA-2251（额度审批）"],["额度占用","¥9,860（含打包物流）"],["生产单号","—"],["出库单号","—"],["责任归属","免费额度内，公司承担"]],
+          ship:[["物流商","待 OA 比价"],["国内运单号","—"],["国际运单号","—"],["预计发货","额度批复后安排"]],
+          atts:[["#5b7a8c","申领清单","PDF · 额度件明细"]],
+          log:[["2026-11-19 09:12","BTL 提交免费额度申领，系统自动核算剩余额度"],["2026-11-19 09:12","本单费用含打包与物流费，OA 额度单 OA-2251 已生成待批"]] },
+        { id:"ASO-202611-042", biz:"b", tenant:"VPS", tenantNm:"VPS · Venom", vinTail:"3175", model:"UTV", fault:"配件采购", part:"控制器 ×1（+配套线束）", st:"exec", stTx:"备货中", trk:"w", trkTx:"白 · 正常", oa:"OA-2255", resp:"客户付费（ORD 关联）", fee:"7,360", date:"2026-11-18", stage:3,
+          desc:"客户采购配件转售。线下确认后由售后代提交：已确认「单件 + 配套件」（控制器加配套线束），并按车架号匹配整车物料号与 BOM 锁定准确配件后报价。",
+          bizNote:"<b>B 类匹配链：</b>车架号 …3175 → 整车物料号 UTV1000-2026 → BOM 定位控制器 WL-CTL-UT09 及其配套线束 WL-HAR-UT21；订购方式：单件 + 配套件。关联付费订单 ORD-202611-011。",
+          parts:[["WL-CTL-UT09","控制器（UTV 款）","1","备货中","客户付费"],["WL-HAR-UT21","电机线束（配套）","1","备货中","客户付费"]],
+          veh:[["车架号","LVU····3175"],["车型","UTV 1000"],["整车物料号","UTV1000-2026"],["车身 / 座椅颜色","深空灰 / 黑（据销售订单）"]],
+          intl:[["OA 编号","OA-2255"],["关联订单","ORD-202611-011"],["生产单号","—（现货）"],["出库单号","待出库"],["责任归属","客户付费"]],
+          ship:[["物流商","待安排"],["国内运单号","—"],["国际运单号","—"],["预计发货","付款后 2 个工作日内"]],
+          atts:[["#37536b","线下确认单","PDF · 客户签字"]],
+          log:[["2026-11-18 10:30","客户线下确认采购，售后代提交"],["2026-11-18 11:05","车架号匹配 BOM 完成，确认单件 + 配套件并报价"],["2026-11-18 15:40","客户确认价格，备货中"]] },
+        { id:"ASO-202611-043", biz:"c", tenant:"PDG", tenantNm:"PDG", vinTail:"7741", model:"高尔夫球车", fault:"特批赠送", part:"品牌展示架 ×1、贴纸 ×10", st:"exec", stTx:"OA 审批中", trk:"w", trkTx:"白 · 正常", oa:"OA-2258", resp:"特批赠送", fee:"0（赠送）", date:"2026-11-17", stage:2,
+          desc:"客户需求 C：展会支持特批赠送一批展示物料。流程与三包件相同——判定、生成售后订单、OA 特批、U8 流转、打包发货、签收，只是费用走特批、不占免费额度、不向客户收费。",
+          bizNote:"<b>特批说明：</b>特批单号随 OA-2258 留痕，审批人、事由必填；赠送件单独统计，不混入三包成本与免费额度。",
+          parts:[["WL-DSP-001","品牌展示架","1","待 OA","特批赠送"],["WL-STK-0112","车身贴纸套装","10","待 OA","特批赠送"]],
+          veh:[["车架号","—（展示物料）"],["车型","高尔夫球车"],["交付日期","—"],["保修状态","—"]],
+          intl:[["OA 编号","OA-2258（特批）"],["特批事由","展会支持"],["生产单号","—"],["出库单号","—"],["责任归属","公司特批"]],
+          ship:[["物流商","待安排"],["国内运单号","—"],["国际运单号","—"],["预计发货","OA 通过后安排"]],
+          atts:[["#7a5b3a","特批申请","PDF · 展会支持"]],
+          log:[["2026-11-17 14:02","PDG 提出赠送需求，售后沟通确认清单"],["2026-11-17 16:20","生成售后订单并提交 OA 特批"]] },
+        { id:"ASO-202611-044", biz:"e", tenant:"TH", tenantNm:"泰国工厂 / RMA", vinTail:"—", model:"整批", fault:"漏发", part:"配件包 ×3（WEV 终端客户）", st:"review", stTx:"调查中", trk:"y", trkTx:"黄 · 关注", oa:"—（待结论）", resp:"待调查结论", fee:"—", date:"2026-11-19", stage:1,
+          desc:"发泰国的 RMA / WEV 批次中，中泰转交终端客户的配件包少 3 包。先调查、后发起：客户与生产发货两边的依据都齐了、结论明确由哪方承担，才生成补发单。",
+          bizNote:"<b>调查依据：</b>客户依据——RMA 收货清点表、loading detail、终端客户签收差异记录；生产发货依据——装箱单、出库称重记录、柜号与封柜照片。结论未出前状态为「调查中」，不进 OA。",
+          parts:[["待核对","配件包（按装箱单核对）","3","调查中","待结论"]],
+          veh:[["车架号","—（批次件）"],["车型","整批 RMA / WEV"],["交付日期","—"],["保修状态","—"]],
+          intl:[["OA 编号","—（调查结论后生成）"],["调查负责","售后 + 生产发货"],["生产单号","—"],["出库单号","—"],["责任归属","待调查结论"]],
+          ship:[["物流商","—"],["柜号","随原柜号核对中"],["国际运单号","—"],["预计发货","结论后随下批货补发"]],
+          atts:[["#6b3737","清点差异表","PDF · RMA"],["#37536b","封柜照片","IMG · 出库存档"]],
+          log:[["2026-11-19 11:48","泰国 RMA 反馈少件，平台开调查单"],["2026-11-19 15:26","已调取装箱单与出库称重记录，等待客户补终端签收记录"]] },
+        { id:"ASO-202611-045", biz:"s", tenant:"VPS", tenantNm:"VPS · Venom", vinTail:"—", model:"备件仓", fault:"主动备件补货", part:"控制器 ×5、充电器 ×5", st:"exec", stTx:"按计划备货", trk:"w", trkTx:"白 · 正常", oa:"OA-2260", resp:"WHL 备件（产权归 WHL）", fee:"—", date:"2026-11-16", stage:3,
+          desc:"按已审批的季度备件计划，给 VPS 客户处备件仓补货。备件产权归 WHL、放在客户处备用，客户领用时登记、后补关联单据，平台月度对账。",
+          bizNote:"<b>备件计划：</b>依据 VPS 备件计划（季度）发起，计划内品类与数量直接生成备件单；计划外品类须另行审批。库存明细见「备件管理」页。",
+          parts:[["WL-CTL-2201","控制器 48V/275A","5","备货中","WHL 备件"],["WL-CHG-4805","充电器 48V/15A","5","备货中","WHL 备件"]],
+          veh:[["车架号","—（备件不绑单车）"],["存放点","VPS 客户仓"],["产权","WHL"],["盘点周期","每月对账"]],
+          intl:[["OA 编号","OA-2260（备件计划）"],["备件计划","VPS 季度补货计划"],["生产单号","SC-8840"],["出库单号","待出库"],["责任归属","WHL 备件资产"]],
+          ship:[["物流商","待安排"],["国内运单号","—"],["国际运单号","—"],["预计发货","与下批售后件合并发出"]],
+          atts:[["#5b7a8c","备件计划表","PDF · 已审批"]],
+          log:[["2026-11-16 09:00","按 VPS 季度备件计划自动生成备件单"],["2026-11-16 13:30","OA 审批通过，转 U8 生产单 SC-8840 备货"]] }
+      );
+      var orders = [
+        { id:"ORD-202611-006", tenant:"PDG", tenantNm:"PDG", item:"控制器 ×2、仪表 ×1", amt:"12,860", pay:"wait", payTx:"待付款", st:"待付款", date:"2026-11-17" },
+        { id:"ORD-202611-007", tenant:"VPS", tenantNm:"VPS · Venom", item:"轮胎 ×4", amt:"6,400", pay:"ok", payTx:"已付款", st:"已出库", date:"2026-11-15" },
+        { id:"ORD-202611-008", tenant:"BTL", tenantNm:"BTL · Bintelli", item:"充电器 ×3", amt:"4,950", pay:"no", payTx:"待确认", st:"待确认价格库存", date:"2026-11-19" },
+        { id:"ORD-202611-009", tenant:"AU", tenantNm:"澳洲客户", item:"电机 ×1", amt:"18,200", pay:"ok", payTx:"已付款", st:"运输中", date:"2026-11-10" },
+        { id:"ORD-202611-010", tenant:"PDG", tenantNm:"PDG", item:"电池连接线 ×10", amt:"3,150", pay:"wait", payTx:"待付款", st:"待付款", date:"2026-11-20" }
+      ];
+      var shipments = [
+        { rel:"CLM-202611-021", tenant:"VPS · Venom", carrier:"捷报", dom:"JB20261118032", intl:"MAEU 8841-2207", mode:"海运", date:"2026-11-18", prog:55, progTx:"已离港 · 太平洋在途", trk:"r", trkTx:"红 · 重点" },
+        { rel:"CLM-202611-030", tenant:"巴西客户", carrier:"影子", dom:"YZ20261119045", intl:"MSCU 7712-0931", mode:"海运", date:"2026-11-19", prog:30, progTx:"已装船 · 待离港", trk:"w", trkTx:"白 · 正常" },
+        { rel:"ORD-202611-009", tenant:"澳洲客户", carrier:"影子", dom:"YZ20261110077", intl:"OOLU 6631-5520", mode:"海运", date:"2026-11-10", prog:82, progTx:"已到港 · 清关中", trk:"y", trkTx:"黄 · 关注" },
+        { rel:"CLM-202611-009", tenant:"澳洲客户", carrier:"影子", dom:"YZ20261106018", intl:"OOLU 5520-8814", mode:"海运", date:"2026-11-06", prog:100, progTx:"已签收 2026-11-19", trk:"w", trkTx:"白 · 正常" },
+        { rel:"CLM-202611-027", tenant:"泰国工厂 / RMA", carrier:"顺丰", dom:"待揽收", intl:"—", mode:"空运", date:"预计 2026-11-21", prog:8, progTx:"出库中 · 待揽收", trk:"y", trkTx:"黄 · 关注" }
+      ];
+      var parts = [
+        { no:"WL-CTL-2201", nm:"控制器 48V/275A", sys:"电控系统", fit:"高尔夫球车 4/6 座", stock:"out", stockTx:"缺货 · 生产中", qty:"在产 40", price:"1,280", src:"公司库存" },
+        { no:"WL-MOT-7500", nm:"驱动电机 7.5kW", sys:"驱动系统", fit:"UTV 800 / 1000", stock:"ok", stockTx:"有货", qty:"库存 26", price:"6,900", src:"供应商可直供" },
+        { no:"WL-CHG-4805", nm:"充电器 48V/15A", sys:"充电系统", fit:"高尔夫球车全系", stock:"ok", stockTx:"有货", qty:"库存 58", price:"620", src:"公司库存" },
+        { no:"WL-BMP-UT07", nm:"前保险杠（UTV）", sys:"车身附件", fit:"UTV 1000", stock:"low", stockTx:"低库存", qty:"库存 3", price:"890", src:"公司库存" },
+        { no:"WL-DSH-UT03", nm:"仪表总成（UTV 款）", sys:"电控系统", fit:"UTV 800 / 1000", stock:"ok", stockTx:"有货", qty:"库存 17", price:"1,450", src:"公司库存" },
+        { no:"WL-CAB-BT12", nm:"电池连接线", sys:"充电系统", fit:"高尔夫球车 4 座", stock:"low", stockTx:"低库存", qty:"库存 9", price:"315", src:"召回关联件" },
+        { no:"WL-HAR-UT21", nm:"电机线束", sys:"驱动系统", fit:"UTV 1000", stock:"ok", stockTx:"有货", qty:"库存 34", price:"460", src:"供应商可直供" },
+        { no:"WL-STK-0112", nm:"车身贴纸套装", sys:"车身附件", fit:"UTV 全系", stock:"ok", stockTx:"有货", qty:"库存 120", price:"85", src:"公司库存" },
+        { no:"WL-UPG-KIT2", nm:"技术升级套件", sys:"电控系统", fit:"高尔夫球车 4 座（2025 款）", stock:"ok", stockTx:"有货", qty:"库存 22", price:"—", src:"三包专用" }
+      ];
+      var tenants = [
+        { code:"PDG", nm:"PDG", rg:"美国 · 佛罗里达仓库", open:34, users:6 },
+        { code:"VPS", nm:"Venom", rg:"美国 · 南卡", open:28, users:5 },
+        { code:"BTL", nm:"Bintelli（宾特利）", rg:"美国 · 南卡", open:19, users:4 },
+        { code:"AU", nm:"澳洲客户", rg:"澳大利亚", open:15, users:3 },
+        { code:"BR", nm:"巴西客户", rg:"巴西", open:11, users:3 },
+        { code:"BK", nm:"巴克亚", rg:"非美客户", open:4, users:2 },
+        { code:"PL", nm:"波兰客户", rg:"波兰", open:7, users:2 },
+        { code:"ES", nm:"西班牙客户", rg:"西班牙", open:6, users:2 },
+        { code:"IT", nm:"意大利客户", rg:"意大利", open:5, users:2 },
+        { code:"DK", nm:"丹麦客户", rg:"丹麦", open:3, users:2 },
+        { code:"AE", nm:"迪拜客户", rg:"阿联酋 · 迪拜", open:4, users:2 },
+        { code:"TH", nm:"泰国工厂 / RMA", rg:"泰国", open:9, users:4 },
+        { code:"OTP", nm:"OTP", rg:"非美客户", open:2, users:1 }
+      ];
+      var rank = [
+        ["PDG", 96, 148, "98,400", "36,200", "102,300", 5],
+        ["VPS · Venom", 88, 131, "86,700", "28,900", "118,600", 4],
+        ["BTL · Bintelli", 64, 92, "57,300", "19,400", "74,800", 2],
+        ["澳洲客户", 52, 79, "61,900", "24,600", "96,200", 1],
+        ["泰国工厂 / RMA", 47, 58, "22,800", "0", "31,500", 2],
+        ["巴西客户", 39, 47, "38,500", "11,800", "88,900", 1],
+        ["其他非美客户", 100, 47, "47,000", "118,000", "199,243", 3]
+      ];
+
+      /* ================= Helpers ================= */
+      var $ = function(id){ return document.getElementById(id); };
+      var stCls = { review:"s-review", exec:"s-exec", ship:"s-ship", done:"s-done" };
+      var isCustomer = false, curTenant = null, curFilter = "all", searchQ = "";
+      var toastTimer = null;
+      function toast(msg){
+        var t = $("toast"); t.textContent = msg; t.classList.add("on");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function(){ t.classList.remove("on"); }, 2600);
+      }
+      function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
+
+      /* ================= Navigation ================= */
+      var pageTitles = {
+        dashboard:["工作台","2026 年 11 月 · 全部直接客户"],
+        claims:["售后订单","六类业务 · 同一单号贯穿"],
+        "claim-detail":["售后单详情",""],
+        orders:["有偿订单","下单 B 配件采购 · ORD 单号"],
+        logistics:["物流跟踪","柜号 / 快递单 · 国内 / 国际双运单号"],
+        parts:["配件中心","按车架号 → BOM 找件 · 六类业务共用库存"],
+        knowledge:["知识库","三包政策公示 · 手册 · 通告"],
+        spare:["备件管理","产权归 WHL · 客户处备用"],
+        basedata:["基础数据","车架号 · BOM · 颜色 · 爆炸图"],
+        analytics:["数据看板","内部全量数据"],
+        tenants:["客户与权限","租户 · 账号 · 角色"]
+      };
+      function gotoPage(name, filter){
+        document.querySelectorAll(".page").forEach(function(p){ p.classList.remove("on"); });
+        $("page-" + name).classList.add("on");
+        document.querySelectorAll("#sidenav button").forEach(function(b){
+          b.classList.toggle("on", b.getAttribute("data-page") === name || (name === "claim-detail" && b.getAttribute("data-page") === "claims"));
+        });
+        document.querySelectorAll(".mobilebar [data-mpage]").forEach(function(b){
+          b.classList.toggle("on", b.getAttribute("data-mpage") === name || (name === "claim-detail" && b.getAttribute("data-mpage") === "claims"));
+        });
+        var msEl = $("moreSheet"); if (msEl) msEl.classList.remove("on");
+        var t = pageTitles[name] || [name, ""];
+        $("pageTitle").textContent = t[0];
+        $("pageSub").textContent = isCustomer ? (curTenantNm() + " · 客户门户") : t[1];
+        if (filter){ setClaimFilter(filter); }
+        window.scrollTo({ top:0 });
+      }
+      document.querySelectorAll("#sidenav button").forEach(function(b){
+        b.addEventListener("click", function(){ gotoPage(b.getAttribute("data-page")); });
+      });
+      document.querySelectorAll("[data-goto]").forEach(function(el){
+        el.addEventListener("click", function(){ gotoPage(el.getAttribute("data-goto"), el.getAttribute("data-filter") || null); });
+      });
+
+      /* ================= Claims rendering ================= */
+      var curBiz = "all";
+      function claimVisible(c){
+        if (curTenant && c.tenant !== curTenant) return false;
+        if (curBiz !== "all" && (c.biz || "w") !== curBiz) return false;
+        if (curFilter !== "all" && c.st !== curFilter) return false;
+        if (searchQ){
+          var hay = (c.id + c.vinTail + c.model + c.fault + c.part + c.tenantNm).toLowerCase();
+          if (hay.indexOf(searchQ) < 0) return false;
+        }
+        var tf = $("claimTenantFilter").value;
+        if (!curTenant && tf && c.tenant !== tf) return false;
+        return true;
+      }
+      function renderClaims(){
+        var rows = claims.filter(claimVisible);
+        $("claimCount").textContent = "共 " + rows.length + " 单";
+        if (!rows.length){
+          $("claimBody").innerHTML = '<tr><td colspan="12"><div class="empty">该筛选下暂无单据。</div></td></tr>';
+        } else {
+          $("claimBody").innerHTML = rows.map(function(c){
+            var bz = BIZ[c.biz || "w"];
+            return '<tr class="clickable" data-id="' + c.id + '" tabindex="0" role="button" aria-label="查看 ' + c.id + '">'
+              + '<td data-l="售后单号"><span class="mono">' + c.id + '</span></td>'
+              + '<td data-l="业务类型"><span class="pill biz-' + (c.biz || "w") + '">' + bz.tx + '</span></td>'
+              + '<td data-l="客户">' + esc(c.tenantNm) + '</td>'
+              + '<td data-l="车架号 / 车型">' + (c.vinTail === "—" ? "—" : "…" + esc(c.vinTail)) + ' / ' + esc(c.model) + '</td>'
+              + '<td data-l="事项">' + esc(c.fault) + '</td>'
+              + '<td data-l="配件">' + esc(c.part) + '</td>'
+              + '<td data-l="状态"><span class="pill ' + stCls[c.st] + '">' + c.stTx + '</span></td>'
+              + '<td data-l="跟踪"><span class="flag ' + c.trk + '"><i></i>' + c.trkTx + '</span></td>'
+              + '<td data-l="提交日期">' + c.date + '</td>'
+              + '<td data-l="OA 编号" class="intonly"><span class="mono">' + c.oa + '</span></td>'
+              + '<td data-l="责任 / 费用归属" class="intonly">' + c.resp + '</td>'
+              + '<td data-l="费用（元）" class="intonly num">' + c.fee + '</td>'
+              + '</tr>';
+          }).join("");
+        }
+        // dashboard mini list
+        var dash = claims.filter(function(c){ return !curTenant || c.tenant === curTenant; }).slice(0, 5);
+        $("dashClaimBody").innerHTML = dash.map(function(c){
+          return '<tr class="clickable" data-id="' + c.id + '"><td data-l="售后单号"><span class="mono">' + c.id + '</span></td>'
+            + '<td data-l="客户">' + esc(c.tenantNm) + '</td><td data-l="事项">' + esc(c.fault) + '</td>'
+            + '<td data-l="状态"><span class="pill ' + stCls[c.st] + '">' + c.stTx + '</span></td>'
+            + '<td data-l="更新">' + c.date.slice(5) + '</td></tr>';
+        }).join("");
+        bindRowClicks();
+      }
+      function bindRowClicks(){
+        document.querySelectorAll("tr.clickable").forEach(function(tr){
+          tr.addEventListener("click", function(){ openClaim(tr.getAttribute("data-id")); });
+          tr.addEventListener("keydown", function(e){ if (e.key === "Enter") openClaim(tr.getAttribute("data-id")); });
+        });
+      }
+      function setClaimFilter(f){
+        curFilter = f;
+        document.querySelectorAll("#page-claims .fbtn").forEach(function(b){
+          b.setAttribute("aria-pressed", b.getAttribute("data-filter") === f ? "true" : "false");
+        });
+        renderClaims();
+      }
+      document.querySelectorAll("#page-claims .fbtn[data-filter]").forEach(function(b){
+        b.addEventListener("click", function(){ setClaimFilter(b.getAttribute("data-filter")); });
+      });
+      function setBizFilter(bz){
+        curBiz = bz;
+        document.querySelectorAll(".bizf").forEach(function(x){ x.setAttribute("aria-pressed", x.getAttribute("data-biz") === bz ? "true" : "false"); });
+        renderClaims();
+      }
+      document.querySelectorAll(".bizf").forEach(function(b){
+        b.addEventListener("click", function(){ setBizFilter(b.getAttribute("data-biz")); });
+      });
+      $("claimTenantFilter").addEventListener("change", renderClaims);
+
+      /* ================= Claim detail ================= */
+      var curClaim = null;
+      function kvHtml(pairs){
+        return pairs.map(function(p){ return '<div><div class="k">' + esc(p[0]) + '</div><div class="v">' + esc(p[1]) + '</div></div>'; }).join("");
+      }
+      function openClaim(id){
+        var c = null;
+        claims.forEach(function(x){ if (x.id === id) c = x; });
+        if (!c) return;
+        curClaim = c;
+        $("dTitle").textContent = c.id;
+        var st = $("dStatus"); st.textContent = c.stTx; st.className = "pill " + stCls[c.st];
+        var fl = $("dFlag"); fl.className = "flag " + c.trk; fl.innerHTML = "<i></i>" + c.trkTx;
+        $("dFlow").innerHTML = STEPS.map(function(s, i){
+          var cls = i + 1 < c.stage ? "done" : (i + 1 === c.stage ? "now" : "");
+          var mark = i + 1 < c.stage ? "✓" : (i + 1);
+          return '<div class="fn ' + cls + '"><div class="fd">' + mark + '</div><div class="fl">' + s + '</div></div>';
+        }).join("");
+        $("dFaultKv").innerHTML = kvHtml([["客户", c.tenantNm],["业务类型", BIZ[c.biz || "w"].tx],["事项类型", c.fault],["发生 / 提交日期", c.date]]);
+        $("dDesc").textContent = c.desc;
+        $("dBizPanel").innerHTML = c.bizNote ? '<div class="secttl">本类业务的判定环节</div><p style="margin:0;font-size:13.5px;color:var(--ink2);background:var(--surface2);border:1px solid var(--line);border-radius:8px;padding:10px 13px">' + c.bizNote + '</p>' : "";
+        $("dU8Flow").innerHTML = U8FLOW;
+        $("dAtts").innerHTML = c.atts.map(function(a){
+          return '<div class="att"><div class="thumb" style="background:' + a[0] + '">' + a[2] + '</div><div class="cap">' + a[1] + '</div></div>';
+        }).join("");
+        $("dPartsBody").innerHTML = c.parts.map(function(p){
+          return '<tr><td data-l="配件号"><span class="mono">' + esc(p[0]) + '</span></td><td data-l="描述">' + esc(p[1]) + '</td><td data-l="数量">' + esc(p[2]) + '</td><td data-l="状态">' + esc(p[3]) + '</td><td data-l="来源" class="intonly">' + esc(p[4]) + '</td></tr>';
+        }).join("");
+        $("dLog").innerHTML = c.log.map(function(l){ return '<li><span class="lt">' + l[0] + '</span><br /><span class="lx">' + l[1] + '</span></li>'; }).join("");
+        $("dVehKv").innerHTML = kvHtml(c.veh);
+        $("dIntKv").innerHTML = kvHtml(c.intl);
+        $("dShipKv").innerHTML = kvHtml(c.ship);
+        var act = $("dActionBtn");
+        if (c.stage >= 7){ act.textContent = "已关单"; act.disabled = true; }
+        else if (isCustomer){ act.textContent = c.stage === 6 ? "确认签收" : "催办 / 补充资料"; act.disabled = false; }
+        else { act.textContent = "推进到下一步"; act.disabled = false; }
+        gotoPage("claim-detail");
+        $("pageSub").textContent = c.tenantNm + " · " + c.model + " · 车架号 …" + c.vinTail;
+      }
+      $("backToClaims").addEventListener("click", function(){ gotoPage("claims"); });
+      $("dActionBtn").addEventListener("click", function(){
+        if (!curClaim) return;
+        if (isCustomer){ toast(curClaim.stage === 6 ? "已确认签收，单据关单并进入数据统计" : "已发送催办，内部处理人将收到提醒"); return; }
+        if (curClaim.stage < 7){
+          curClaim.stage += 1;
+          curClaim.log.push(["2026-11-20 19:10", "内部推进至「" + STEPS[curClaim.stage - 1] + "」环节"]);
+          if (curClaim.stage === 5){ curClaim.st = "ship"; curClaim.stTx = "已发货"; }
+          if (curClaim.stage === 7){ curClaim.st = "done"; curClaim.stTx = "已签收"; }
+          if (curClaim.stage > 1 && curClaim.st === "review"){ curClaim.st = "exec"; curClaim.stTx = "执行中"; }
+          openClaim(curClaim.id); renderClaims();
+          toast("已推进到「" + STEPS[curClaim.stage - 1] + "」，客户侧进度已同步");
+        }
+      });
+      $("dPrintBtn").addEventListener("click", function(){ toast("单据已生成打印版（演示环境未接打印机）"); });
+
+      /* ================= Orders ================= */
+      function renderOrders(){
+        var rows = orders.filter(function(o){ return !curTenant || o.tenant === curTenant; });
+        $("orderBody").innerHTML = rows.length ? rows.map(function(o){
+          var payCls = o.pay === "ok" ? "pay-ok" : (o.pay === "wait" ? "pay-wait" : "pay-no");
+          var act = o.pay === "no" ? '<button type="button" class="btn sm ord-act">确认价格</button>'
+            : (o.pay === "wait" ? '<button type="button" class="btn sm ord-act">' + (isCustomer ? "去付款" : "提醒付款") + '</button>'
+            : '<button type="button" class="btn sm ord-act">查看物流</button>');
+          return '<tr><td data-l="订单号"><span class="mono">' + o.id + '</span></td><td data-l="客户">' + o.tenantNm + '</td>'
+            + '<td data-l="配件">' + o.item + '</td><td data-l="金额（元）" class="num">' + o.amt + '</td>'
+            + '<td data-l="付款状态"><span class="pill ' + payCls + '">' + o.payTx + '</span></td>'
+            + '<td data-l="订单状态">' + o.st + '</td><td data-l="下单日期">' + o.date + '</td><td data-l="操作">' + act + '</td></tr>';
+        }).join("") : '<tr><td colspan="8"><div class="empty">该客户暂无有偿订单。</div></td></tr>';
+        document.querySelectorAll(".ord-act").forEach(function(b){
+          b.addEventListener("click", function(){ toast("操作已记录（演示环境不产生真实付款）"); });
+        });
+      }
+
+      /* ================= Logistics ================= */
+      function renderShipments(){
+        var rows = shipments.filter(function(s){ return !curTenant || s.tenant.indexOf(curTenantNm()) >= 0 || s.tenant === curTenant; });
+        if (!rows.length){ $("shipBody").innerHTML = '<tr><td colspan="9"><div class="empty">当前客户暂无在途物流。</div></td></tr>'; return; }
+        $("shipBody").innerHTML = rows.map(function(s){
+          return '<tr><td data-l="关联单号"><span class="mono">' + s.rel + '</span></td><td data-l="客户">' + s.tenant + '</td>'
+            + '<td data-l="物流商">' + s.carrier + '</td><td data-l="国内运单号"><span class="mono">' + s.dom + '</span></td>'
+            + '<td data-l="国际运单号"><span class="mono">' + s.intl + '</span></td><td data-l="方式">' + s.mode + '</td>'
+            + '<td data-l="发货日期">' + s.date + '</td>'
+            + '<td data-l="运输进度" style="min-width:170px"><div class="progress-track"><div class="progress-fill" style="width:' + s.prog + '%"></div></div><span style="font-size:12px;color:var(--muted)">' + s.progTx + '</span></td>'
+            + '<td data-l="跟踪"><span class="flag ' + s.trk + '"><i></i>' + s.trkTx + '</span></td></tr>';
+        }).join("");
+      }
+
+      /* ================= Parts ================= */
+      var curSys = "all", partQ = "";
+      function renderParts(){
+        var rows = parts.filter(function(p){
+          if (curSys !== "all" && p.sys !== curSys) return false;
+          if (partQ && (p.no + p.nm + p.fit).toLowerCase().indexOf(partQ) < 0) return false;
+          return true;
+        });
+        $("partGrid").innerHTML = rows.length ? rows.map(function(p, i){
+          var btn = p.stock === "out"
+            ? '<button type="button" class="btn sm part-act" data-i="' + i + '">到货通知我</button>'
+            : '<button type="button" class="btn sm primary part-act" data-i="' + i + '">有偿订购</button>';
+          return '<div class="card part"><div class="pno"><span class="mono">' + p.no + '</span><span class="pill stock-' + p.stock + '" style="margin-left:auto">' + p.stockTx + '</span></div>'
+            + '<h3>' + p.nm + '</h3><div class="fit">适配：' + p.fit + ' · ' + p.qty + '</div>'
+            + '<div class="meta"><span>' + p.sys + '</span><span>' + p.src + '</span></div>'
+            + '<div class="prow"><span class="price num">' + (p.price === "—" ? "—" : "¥" + p.price) + (p.price === "—" ? "" : ' <small>/ 件</small>') + '</span>' + btn + '</div></div>';
+        }).join("") : '<div class="empty" style="grid-column:1/-1">没有匹配的配件，换个关键词试试。</div>';
+        document.querySelectorAll(".part-act").forEach(function(b){
+          b.addEventListener("click", function(){
+            var p = rows[Number(b.getAttribute("data-i"))];
+            if (p.stock === "out"){ toast(p.nm + " 已登记到货通知"); return; }
+            var nid = "ORD-202611-" + String(orders.length + 6).padStart(3, "0");
+            orders.unshift({ id:nid, tenant: curTenant || "PDG", tenantNm: curTenant ? curTenantNm() : "PDG", item: p.nm + " ×1", amt: p.price, pay:"no", payTx:"待确认", st:"待确认价格库存", date:"2026-11-20" });
+            renderOrders();
+            toast("已生成有偿订单 " + nid + "，等待内部确认价格与库存");
+          });
+        });
+      }
+      document.querySelectorAll(".pfilter").forEach(function(b){
+        b.addEventListener("click", function(){
+          document.querySelectorAll(".pfilter").forEach(function(x){ x.setAttribute("aria-pressed", "false"); });
+          b.setAttribute("aria-pressed", "true");
+          curSys = b.getAttribute("data-pf"); renderParts();
+        });
+      });
+      $("partSearch").addEventListener("input", function(){ partQ = this.value.trim().toLowerCase(); renderParts(); });
+      $("diagramBtn").addEventListener("click", function(){ toast("爆炸图视图：按车型 → 系统 → 图层点选配件（框架演示）"); });
+
+      /* ================= Dashboard charts / analytics ================= */
+      function barRows(el, data, cls){
+        var max = Math.max.apply(null, data.map(function(d){ return d[1]; }));
+        $(el).innerHTML = data.map(function(d){
+          return '<div class="bar-row"><span class="bl">' + d[0] + '</span><div class="bar-track"><div class="bar-fill ' + (cls || "") + '" style="width:' + Math.round(d[1] / max * 100) + '%"></div></div><span class="bv">' + d[2] + '</span></div>';
+        }).join("");
+      }
+      barRows("faultBars", [["质量问题", 318, "318"], ["漏发", 36, "36"], ["错发", 16, "16"], ["运输损坏", 13, "13"], ["技术升级", 6, "6"], ["其他 / 待判定", 213, "213"]], "");
+      (function(){
+        var data = [["待判定", 17], ["审批 / 执行中", 46], ["已发货在途", 38], ["待签收", 9], ["本月已关单", 31]];
+        var max = 46;
+        $("stageBars").innerHTML = data.map(function(d, i){
+          var cls = i === 0 ? "" : (i >= 3 ? "tea" : "");
+          return '<div class="bar-row"><span class="bl">' + d[0] + '</span><div class="bar-track"><div class="bar-fill ' + cls + '" style="width:' + Math.round(d[1] / max * 100) + '%"></div></div><span class="bv">' + d[1] + '</span></div>';
+        }).join("");
+      })();
+      barRows("monthBars", [["6 月", 31, "31"], ["7 月", 38, "38"], ["8 月", 44, "44"], ["9 月", 41, "41"], ["10 月", 52, "52"], ["11 月", 46, "46"]], "tea");
+      $("rankBody").innerHTML = rank.map(function(r){
+        return '<tr><td data-l="客户"><b>' + r[0] + '</b></td><td data-l="索赔单" class="num">' + r[1] + '</td><td data-l="配件行" class="num">' + r[2] + '</td><td data-l="三包成本（元）" class="num">' + r[3] + '</td><td data-l="有偿订单（元）" class="num">' + r[4] + '</td><td data-l="运费（元）" class="num">' + r[5] + '</td><td data-l="红标单" class="num">' + r[6] + '</td></tr>';
+      }).join("");
+
+      /* ================= Business types / quota / spare / VIN ================= */
+      var bizCards = [
+        { k:"w", t:"三包件", d:"质量问题、技术升级。客户反馈 → 售后沟通判定（单据含配件详单）→ 生成售后订单，走完整主线。", n:"本月 46 单", s:"判定要点：是否在保、责任归属" },
+        { k:"a", t:"客户下单 A · 免费额度件", d:"如 BTL 按销售额 1.5% 的免费件。先判额度：费用含打包与物流费，占用在 OA 里体现，超额转付费。", n:"3 家有额度协议", s:"判定要点：剩余额度是否够本单" },
+        { k:"b", t:"客户下单 B · 配件采购", d:"客户为转售采购配件。平台提交或线下确认后售后代提交；先确认单件 / 单件+配套件，再按车架号对 BOM 选件。", n:"走 ORD 付费单", s:"判定要点：车架号与 BOM 匹配" },
+        { k:"c", t:"客户需求 C · 特批赠送件", d:"特批赠送，流程与三包件完全相同，只多一步 OA 特批留痕；不占免费额度、不收费、单独统计。", n:"须特批留痕", s:"判定要点：特批事由与审批人" },
+        { k:"e", t:"销售订单错漏发 / 运损", d:"含发泰国 RMA/WEV、中泰转交终端客户的配件。先调查：客户依据 + 生产发货依据，结论后才发起；运损须附现场照片。", n:"先调查后发起", s:"判定要点：调查结论与责任方" },
+        { k:"s", t:"WHL / RMA / VPS 主动备件", d:"产权归 WHL、放在客户处备用。按审批计划成批发起，领用登记、月度对账，详见备件管理。", n:"3 个备件点 · 214 件", s:"判定要点：是否在备件计划内" }
+      ];
+      $("bizGrid").innerHTML = bizCards.map(function(b){
+        return '<button type="button" class="card bizcard" data-bizgo="' + b.k + '"><span class="bt"><span class="code">' + BIZ[b.k].code + '</span>' + b.t + '</span><span class="bd">' + b.d + '</span><span class="bm"><span><b>' + b.n + '</b></span><span>' + b.s + '</span></span></button>';
+      }).join("");
+      document.querySelectorAll("[data-bizgo]").forEach(function(el){
+        el.addEventListener("click", function(){ gotoPage("claims"); setBizFilter(el.getAttribute("data-bizgo")); });
+      });
+      var quotas = [
+        { nm:"BTL · Bintelli", rule:"销售额 × 1.5%", base:"¥12,400,000", total:186000, used:142300, note:"本单 ASO-202611-041 占用 ¥9,860 待批" },
+        { nm:"VPS · Venom", rule:"销售额 × 1.0%", base:"¥9,800,000", total:98000, used:61500, note:"额度充足" },
+        { nm:"PDG", rule:"固定年度额度", base:"—", total:120000, used:113200, note:"剩余额度不足 6%，新单请先核额度" }
+      ];
+      function quotaHtml(q){
+        var pct = Math.round(q.used / q.total * 100);
+        var left = q.total - q.used;
+        var cls = pct >= 95 ? "over" : (pct >= 80 ? "warn" : "");
+        return '<div style="padding:7px 0;border-bottom:1px dashed var(--line)"><div style="display:flex;flex-wrap:wrap;gap:4px 12px;font-size:13.5px"><b>' + q.nm + '</b><span style="color:var(--muted)">' + q.rule + (q.base !== "—" ? " · 基数 " + q.base : "") + '</span><span style="margin-left:auto" class="num">已用 ¥' + q.used.toLocaleString() + ' / ¥' + q.total.toLocaleString() + ' · 剩 ¥' + left.toLocaleString() + '</span></div><div class="quota-track"><div class="quota-fill ' + cls + '" style="width:' + pct + '%"></div></div><div style="font-size:12px;color:var(--muted)">' + q.note + ' · 占用口径含打包费与物流费，与 OA 额度单一致</div></div>';
+      }
+      $("quotaDash").innerHTML = quotas.map(quotaHtml).join("");
+      $("quotaTable").innerHTML = quotas.map(quotaHtml).join("") + '<p style="font-size:12.5px;color:var(--muted);margin:8px 0 0">判定规则：提交 A 类单时系统按「配件费 + 打包费 + 物流费」试算并冻结额度，OA 通过后正式占用、驳回自动释放；超额部分提示客户转下单 B 付费，不允许先发货后补批。</p>';
+      barRows("bizBars", [["三包件", 486, "486"], ["下单 B · 配件采购", 212, "212"], ["下单 A · 免费额度", 96, "96"], ["错漏发 / 运损补发", 65, "65"], ["需求 C · 特批赠送", 28, "28"], ["主动备件", 18, "18"]], "");
+      var spares = [
+        { site:"VPS · Venom 仓", part:"控制器 48V/275A", own:"WHL", cur:2, safe:5, used:3, st:"low" },
+        { site:"VPS · Venom 仓", part:"充电器 48V/15A", own:"WHL", cur:8, safe:5, used:2, st:"ok" },
+        { site:"RMA · 泰国仓", part:"仪表总成（UTV 款）", own:"WHL", cur:6, safe:4, used:1, st:"ok" },
+        { site:"RMA · 泰国仓", part:"电池连接线", own:"WHL", cur:1, safe:6, used:5, st:"low" },
+        { site:"WHL · 本部中转仓", part:"驱动电机 7.5kW", own:"WHL", cur:4, safe:3, used:0, st:"ok" },
+        { site:"VPS · Venom 仓", part:"电机线束", own:"WHL", cur:3, safe:8, used:4, st:"low" }
+      ];
+      $("spareBody").innerHTML = spares.map(function(s){
+        var pill = s.st === "low" ? '<span class="pill stock-low">低于安全库存</span>' : '<span class="pill stock-ok">正常</span>';
+        return '<tr><td data-l="备件点"><b>' + s.site + '</b></td><td data-l="配件">' + s.part + '</td><td data-l="产权">' + s.own + '</td><td data-l="现存" class="num">' + s.cur + '</td><td data-l="安全库存" class="num">' + s.safe + '</td><td data-l="本月领用" class="num">' + s.used + '</td><td data-l="状态">' + pill + '</td><td data-l="操作"><button type="button" class="btn sm spare-act">' + (s.st === "low" ? "加入补货计划" : "领用登记") + '</button></td></tr>';
+      }).join("");
+      document.querySelectorAll(".spare-act").forEach(function(b){ b.addEventListener("click", function(){ toast("已记录（演示环境）：补货须走备件计划审批，领用须关联售后单号"); }); });
+      $("sparePlanBtn").addEventListener("click", function(){ toast("备件单只能按已审批计划发起：请选择备件计划后生成（框架演示）"); });
+      var vinDb = {
+        "8842":{ veh:"高尔夫球车 4 座", big:"GC4-2025 标准版", bom:"BOM GC4-2025 · V3", body:"珍珠白", seat:"米白", dia:"已匹配（新状态自动匹配）", parts:"控制器 WL-CTL-2201 · 充电器 WL-CHG-4805 · 电池连接线 WL-CAB-BT12" },
+        "3175":{ veh:"UTV 1000", big:"UTV1000-2026", bom:"BOM UTV1000-2026 · V2", body:"深空灰", seat:"黑", dia:"已匹配（新状态自动匹配）", parts:"控制器 WL-CTL-UT09 · 电机线束 WL-HAR-UT21 · 前保险杠 WL-BMP-UT07" }
+      };
+      function vinChain(v){
+        return '<div class="matchchain"><span class="mc"><span class="k">车架号</span><br /><span class="v">…' + v.tail + '</span></span><span class="arr">→</span><span class="mc"><span class="k">整车大号 / 车型</span><br /><span class="v">' + v.big + ' · ' + v.veh + '</span></span><span class="arr">→</span><span class="mc"><span class="k">BOM</span><br /><span class="v">' + v.bom + '</span></span><span class="mc"><span class="k">车身 / 座椅颜色（销售订单 + loading detail）</span><br /><span class="v">' + v.body + ' / ' + v.seat + '</span></span><span class="mc"><span class="k">爆炸图</span><br /><span class="v">' + v.dia + '</span></span></div><p style="font-size:12.5px;color:var(--muted);margin:8px 0 0">该车 BOM 常用件：' + v.parts + '。在配件中心点选即带出配件号与配套关系。</p>';
+      }
+      function doVinLookup(inputId, resultId){
+        var raw = $(inputId).value.trim();
+        var tail = raw.slice(-4);
+        var v = vinDb[tail];
+        if (!v){ $(resultId).innerHTML = '<p style="font-size:13px;color:var(--amber);margin:10px 0 0">未自动匹配到整车档案：多为旧状态车辆，平台转「人工查询」——售后按生产与 RMA loading detail 核对后回填，回填一次下次自动命中。（演示档案仅 8842 / 3175）</p>'; return; }
+        v.tail = tail;
+        $(resultId).innerHTML = vinChain(v);
+      }
+      $("vinLookupBtn").addEventListener("click", function(){ doVinLookup("vinInput", "vinResult"); });
+      $("bdVinBtn").addEventListener("click", function(){ doVinLookup("bdVinInput", "bdVinResult"); });
+      var kitMode = "单件";
+      function setKit(set){
+        kitMode = set ? "单件 + 配套件" : "单件";
+        $("kitSingle").setAttribute("aria-pressed", set ? "false" : "true");
+        $("kitSet").setAttribute("aria-pressed", set ? "true" : "false");
+        toast("订购方式：" + kitMode + "（选配套件时系统按 BOM 自动带出配套清单）");
+      }
+      $("kitSingle").addEventListener("click", function(){ setKit(false); });
+      $("kitSet").addEventListener("click", function(){ setKit(true); });
+
+      /* ================= Tenants ================= */
+      $("tenantGrid").innerHTML = tenants.map(function(t){
+        return '<div class="card tenant"><div class="code">' + t.code + '<span class="on-dot" title="已开通"></span></div><div class="nm">' + t.nm + '</div><div class="rg">' + t.rg + '</div>'
+          + '<div class="stats"><span>在途单 <b>' + t.open + '</b></span><span>账号 <b>' + t.users + '</b></span></div></div>';
+      }).join("");
+      $("newTenantBtn").addEventListener("click", function(){ toast("新建客户需先确认租户资料：收货地址、保修政策、配件目录（框架演示）"); });
+
+      /* ================= View switch ================= */
+      function curTenantNm(){
+        var sel = $("tenantSel");
+        var opt = sel.options[sel.selectedIndex];
+        return opt ? opt.textContent : "";
+      }
+      function setView(customer){
+        isCustomer = customer;
+        $("btnInternal").setAttribute("aria-pressed", customer ? "false" : "true");
+        $("btnCustomer").setAttribute("aria-pressed", customer ? "true" : "false");
+        $("tenantSel").disabled = !customer;
+        document.body.classList.toggle("custview", customer);
+        curTenant = customer ? $("tenantSel").value : null;
+        $("claimTenantFilter").style.display = customer ? "none" : "";
+        $("userName").textContent = customer ? curTenantNm() : "售后服务部";
+        $("userRole").textContent = customer ? "客户管理员 · 本租户" : "内部管理员 · 全部客户";
+        $("userAvatar").textContent = customer ? curTenant.charAt(0) : "售";
+        $("kpiCustCard").style.display = customer ? "" : "none";
+        $("kpiPending").textContent = customer ? claims.filter(function(c){ return c.tenant === curTenant && c.st !== "done"; }).length : 17;
+        $("policyTenant").textContent = customer ? ("当前政策适用于：" + curTenantNm()) : "内部视角：显示通用政策模板，各客户在此基础上配置";
+        if (customer && ($("page-analytics").classList.contains("on") || $("page-tenants").classList.contains("on"))) gotoPage("dashboard");
+        renderClaims(); renderOrders(); renderShipments();
+        var cur = document.querySelector(".page.on");
+        if (cur) { var t = pageTitles[cur.id.replace("page-", "")] || ["", ""]; $("pageSub").textContent = customer ? (curTenantNm() + " · 客户门户") : t[1]; }
+      }
+      $("btnInternal").addEventListener("click", function(){ setView(false); });
+      $("btnCustomer").addEventListener("click", function(){ setView(true); });
+      $("tenantSel").addEventListener("change", function(){ if (isCustomer) setView(true); });
+
+      /* ================= Search / misc actions ================= */
+      $("globalSearch").addEventListener("input", function(){
+        searchQ = this.value.trim().toLowerCase();
+        if (searchQ && !$("page-claims").classList.contains("on")) gotoPage("claims");
+        renderClaims();
+      });
+      $("bellBtn").addEventListener("click", function(){
+        toast(isCustomer ? "通知：1 票货已到港待签收 · 1 条技术通告更新" : "通知：3 单待预授权 · 4 票红标物流超 48 小时未更新");
+      });
+      $("exportBtn").addEventListener("click", function(){ toast("台账已按当前筛选生成 Excel（演示环境不实际下载）"); });
+      document.querySelectorAll(".dl-btn").forEach(function(b){
+        b.addEventListener("click", function(){ toast("开始下载（演示环境不实际下载文件）"); });
+      });
+
+      /* ================= New claim modal ================= */
+      var modal = $("claimModal");
+      function openModal(){
+        if (isCustomer){ $("fTenant").value = curTenant; $("fTenant").disabled = true; }
+        else { $("fTenant").disabled = false; }
+        modal.classList.add("on");
+        $("fVin").focus();
+      }
+      function closeModal(){ modal.classList.remove("on"); }
+      $("newClaimBtn").addEventListener("click", openModal);
+      modal.querySelectorAll("[data-close]").forEach(function(b){ b.addEventListener("click", closeModal); });
+      modal.addEventListener("click", function(e){ if (e.target === modal) closeModal(); });
+      document.addEventListener("keydown", function(e){ if (e.key === "Escape") closeModal(); });
+      var BIZHINTS = {
+        w:"判定通过后生成售后订单；C 类赠送件流程与三包相同，仅多 OA 特批留痕",
+        a:"提交时按配件费 + 打包费 + 物流费试算额度，占用结果同步显示在 OA 额度单中",
+        b:"须填准确车架号：系统匹配整车大号 → BOM 后锁定配件；请在补充说明里写清单件 / 单件+配套件",
+        c:"流程与三包件相同：判定 → 售后订单 → OA 特批 → U8 流转 → 发货签收",
+        e:"先调查后发起：补充说明里写清客户依据与生产发货依据；运损必须附客户现场照片",
+        s:"只能按已审批的备件计划发起，计划外品类须先补审批；库存见备件管理页"
+      };
+      $("fBiz").addEventListener("change", function(){ $("fBizHint").textContent = BIZHINTS[this.value]; });
+      $("claimForm").addEventListener("submit", function(e){
+        e.preventDefault();
+        var t = $("fTenant").value;
+        var tnm = { PDG:"PDG", VPS:"VPS · Venom", BTL:"BTL · Bintelli", AU:"澳洲客户", BR:"巴西客户", TH:"泰国工厂 / RMA" }[t];
+        var vin = $("fVin").value.trim();
+        var bz = $("fBiz").value;
+        var nid = "ASO-202611-" + String(34 + claims.length).padStart(3, "0");
+        var extra = $("fExtra").value.trim();
+        claims.unshift({
+          id: nid, biz: bz, tenant: t, tenantNm: tnm, vinTail: vin.slice(-4) || "----", model: $("fModel").value,
+          fault: $("fFault").value, part: $("fPart").value.trim() || "待确认", st: "review", stTx: "判定中",
+          trk: "w", trkTx: "白 · 正常", oa: "—", resp: "待判定", fee: "—", date: "2026-11-20", stage: 1,
+          bizNote: extra ? "<b>提交补充：</b>" + esc(extra) : BIZHINTS[bz],
+          desc: $("fDesc").value.trim(),
+          parts: [[ "待确认", $("fPart").value.trim() || "待预审确认", "1", "待预审", "—" ]],
+          veh: [["车架号", vin], ["车型", $("fModel").value], ["交付日期", "系统校验中"], ["保修状态", "提交后自动判定"]],
+          intl: [["OA 编号", "—"], ["OA 提交 / 通过", "—"], ["生产单号", "—"], ["出库单号", "—"], ["责任归属", "待判定"]],
+          ship: [["物流商", "待安排"], ["国内运单号", "—"], ["国际运单号", "—"], ["预计发货", "—"]],
+          atts: [],
+          log: [["2026-11-20 19:10", tnm + " 提交（" + BIZ[bz].tx + "），等待售后沟通判定"]]
+        });
+        closeModal(); renderClaims(); gotoPage("claims"); setClaimFilter("all"); setBizFilter(bz);
+        toast("售后单 " + nid + "（" + BIZ[bz].tx + "）已提交，状态：判定中");
+        this.reset(); $("fDate").value = "2026-11-20";
+      });
+
+      /* ================= Mobile bottom bar / more sheet ================= */
+      document.querySelectorAll("[data-mpage]").forEach(function(b){
+        b.addEventListener("click", function(){ gotoPage(b.getAttribute("data-mpage")); });
+      });
+      $("mobileNewBtn").addEventListener("click", openModal);
+      $("mobileMoreBtn").addEventListener("click", function(){ $("moreSheet").classList.add("on"); });
+      $("msClose").addEventListener("click", function(){ $("moreSheet").classList.remove("on"); });
+      $("moreSheet").addEventListener("click", function(e){ if (e.target === this) this.classList.remove("on"); });
+      document.addEventListener("keydown", function(e){ if (e.key === "Escape") $("moreSheet").classList.remove("on"); });
+
+      /* ================= Init ================= */
+      renderClaims(); renderOrders(); renderShipments(); renderParts();
+    </script>
+  </body>
+</html>
